@@ -11,6 +11,7 @@ export default defineConfig({
       "/debug": { target: "http://127.0.0.1:8000", changeOrigin: true },
       "/curriculum": { target: "http://127.0.0.1:8000", changeOrigin: true },
       "/progress": { target: "http://127.0.0.1:8000", changeOrigin: true },
+      "/client-log": { target: "http://127.0.0.1:8000", changeOrigin: true },
     },
   },
 });

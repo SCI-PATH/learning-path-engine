@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getCurriculum, getHealth, getProgress, postLesson, postProgress } from "./api/client.js";
 import LessonStage from "./components/LessonStage.jsx";
+import { notifyUserFacingError } from "./errors.js";
 
 export default function App() {
   const [userId, setUserId] = useState("demo-1");
@@ -8,7 +9,6 @@ export default function App() {
   const [profile, setProfile] = useState("weak");
   const [event, setEvent] = useState("lesson_start");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const [backendOnline, setBackendOnline] = useState(true);
   const [result, setResult] = useState(null);
   const [curriculum, setCurriculum] = useState(null);
@@ -48,8 +48,11 @@ export default function App() {
       })
       .catch((err) => {
         if (cancelled) return;
-        setBackendOnline(false);
-        setError(err?.message || String(err));
+        const msg = err?.message || String(err);
+        const offline =
+          msg.includes("Failed to fetch") || msg.includes("ECONNREFUSED") || msg.includes("NetworkError");
+        setBackendOnline(!offline);
+        notifyUserFacingError(err, "bootstrap-load", { userId, offline });
       });
     return () => {
       cancelled = true;
@@ -65,14 +68,13 @@ export default function App() {
         action: "save_state",
         lesson_id: id,
         step_index: 0,
-      });
+      }).catch(() => {});
     }
   }
 
   async function onSubmit(e) {
     e.preventDefault();
     setLoading(true);
-    setError("");
     setResult(null);
     /* Fresh run always from first step */
     setResumeStep(0);
@@ -108,12 +110,10 @@ export default function App() {
       setView("lesson");
     } catch (err) {
       const msg = err?.message || String(err);
-      if (msg.includes("Failed to fetch") || msg.includes("ECONNREFUSED")) {
-        setBackendOnline(false);
-        setError("Backend is offline. Start backend server in backend folder with .\\run.ps1 and try again.");
-      } else {
-        setError(msg);
-      }
+      const offline =
+        msg.includes("Failed to fetch") || msg.includes("ECONNREFUSED") || msg.includes("NetworkError");
+      if (offline) setBackendOnline(false);
+      notifyUserFacingError(err, "lesson-start", { userId, offline });
     } finally {
       setLoading(false);
     }
@@ -147,7 +147,6 @@ export default function App() {
 
       if (next?.lesson_id && !isFinalLesson) {
         setLoadingNextLesson(true);
-        setError("");
         try {
           await postProgress({
             user_id: userId,
@@ -181,12 +180,10 @@ export default function App() {
           setEvent("lesson_start");
         } catch (err) {
           const msg = err?.message || String(err);
-          if (msg.includes("Failed to fetch") || msg.includes("ECONNREFUSED")) {
-            setBackendOnline(false);
-            setError("Backend is offline. Try again after starting the server.");
-          } else {
-            setError(msg);
-          }
+          const offline =
+            msg.includes("Failed to fetch") || msg.includes("ECONNREFUSED") || msg.includes("NetworkError");
+          if (offline) setBackendOnline(false);
+          notifyUserFacingError(err, "lesson-next-after-wrap-up", { userId, offline });
           setView("setup");
           setResult(null);
         } finally {
@@ -226,7 +223,7 @@ export default function App() {
       action: "save_state",
       lesson_id: lessonId,
       step_index: stepIndex,
-    });
+    }).catch(() => {});
   }, [lessonId, userId]);
 
   if (view === "lesson" && result?.lesson_text) {
@@ -296,8 +293,9 @@ export default function App() {
         <button type="submit" disabled={loading || !lessonId || !backendOnline}>
           {loading ? "Building lesson…" : "Start lesson"}
         </button>
-        {!backendOnline ? <p className="err">Backend disconnected on port 8000. Start backend and retry.</p> : null}
-        {error ? <p className="err">{error}</p> : null}
+        {!backendOnline ? (
+          <p className="err">Backend disconnected on port 8000. Start backend and retry.</p>
+        ) : null}
       </form>
     </main>
   );

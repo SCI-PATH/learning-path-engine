@@ -4,7 +4,7 @@ import time
 from typing import Any
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -128,6 +128,33 @@ class ProgressUpdateRequest(BaseModel):
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
+
+
+class ClientLogRequest(BaseModel):
+    """Browser-reported failures; logged server-side only (not returned to learners)."""
+
+    context: str = Field(default="unknown", max_length=160)
+    message: str = Field(default="", max_length=2000)
+    detail: str | None = Field(default=None, max_length=8000)
+    user_id: str | None = Field(default=None, max_length=160)
+    offline: bool = False
+    user_agent: str | None = Field(default=None, max_length=520)
+    component_stack: str | None = Field(default=None, max_length=8000)
+
+
+@app.post("/client-log")
+def client_log(body: ClientLogRequest) -> Response:
+    log.warning(
+        "client_report context=%r user_id=%r offline=%s msg=%.400s ua=%.200s stack=%.300s detail=%.300s",
+        body.context,
+        body.user_id,
+        body.offline,
+        body.message or "",
+        body.user_agent or "",
+        body.component_stack or "",
+        body.detail or "",
+    )
+    return Response(status_code=204)
 
 
 class SearchRequest(BaseModel):
