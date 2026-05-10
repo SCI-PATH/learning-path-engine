@@ -1,0 +1,84 @@
+{
+  "course_id": "g6_science_sl",
+  "title": "Grade 6 Science — structured path",
+  "description": "Eleven sequential segments mapped to PDF page ranges (science G-6 E.pdf, 190 pages). Edit titles and ranges when you align to the real TOC.",
+  "lessons": [
+    {
+      "lesson_id": "g6_sci_01",
+      "title": "Wonders of the Living World",
+      "topic_id": "g6_science_ch01",
+      "page_start": 15,
+      "page_end": 34
+    },
+    {
+      "lesson_id": "g6_sci_02",
+      "title": "Things Around Us",
+      "topic_id": "g6_science_ch02",
+      "page_start": 35,
+      "page_end": 48
+    },
+    {
+      "lesson_id": "g6_sci_03",
+      "title": "Water as a Natural Resource",
+      "topic_id": "g6_science_ch03",
+      "page_start": 49,
+      "page_end": 62
+    },
+    {
+      "lesson_id": "g6_sci_04",
+      "title": "Energy in Day to Day Life",
+      "topic_id": "g6_science_ch04",
+      "page_start": 63,
+      "page_end": 80
+    },
+    {
+      "lesson_id": "g6_sci_05",
+      "title": "Light and Vision",
+      "topic_id": "g6_science_ch05",
+      "page_start": 81,
+      "page_end": 100
+    },
+    {
+      "lesson_id": "g6_sci_06",
+      "title": "Sound and Hearing",
+      "topic_id": "g6_science_ch06",
+      "page_start": 101,
+      "page_end": 112
+    },
+    {
+      "lesson_id": "g6_sci_07",
+      "title": "Magnets",
+      "topic_id": "g6_science_ch07",
+      "page_start": 113,
+      "page_end": 123
+    },
+    {
+      "lesson_id": "g6_sci_08",
+      "title": "Electricity for a Comfortable Life",
+      "topic_id": "g6_science_ch08",
+      "page_start": 124,
+      "page_end": 146
+    },
+    {
+      "lesson_id": "g6_sci_09",
+      "title": "Heat and Its Effects",
+      "topic_id": "g6_science_ch09",
+      "page_start": 147,
+      "page_end": 161
+    },
+    {
+      "lesson_id": "g6_sci_10",
+      "title": "Food Related Interactions",
+      "topic_id": "g6_science_ch10",
+      "page_start": 162,
+      "page_end": 172
+    },
+    {
+      "lesson_id": "g6_sci_11",
+      "title": "Weather and Climate",
+      "topic_id": "g6_science_ch11",
+      "page_start": 173,
+      "page_end": 190
+    }
+  ]
+}

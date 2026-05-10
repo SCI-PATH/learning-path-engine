@@ -1,0 +1,14 @@
+# 1) Create venv with Python 3.12 ONLY:
+#    py -3.12 -m venv .venv
+# 2) Always install with the venv interpreter (NOT global `pip` — yours may be 3.14):
+#    .\.venv\Scripts\python.exe -m pip install -r requirements.txt
+#
+# chromadb 0.5.x pulls chroma-hnswlib, which often must compile on Windows (needs MSVC).
+# chromadb 1.5.x ships a win_amd64 wheel and avoids that compile step.
+fastapi==0.115.6
+uvicorn[standard]==0.32.1
+pydantic>=2.10.3,<3
+python-dotenv==1.0.1
+chromadb==1.5.8
+pypdf==5.1.0
+openai>=1.55.0
