@@ -248,7 +248,7 @@ def set_learner_profile(
     grade: int | None = None,
 ) -> dict[str, Any]:
     """
-    Store knowledge category from Learner Profile Analytics (weak | average | strong | smart).
+    Store knowledge category from Learner Profile Analytics (basic | intermediate | advanced).
     No score calculation — category is authoritative.
     """
     init_db()
@@ -311,9 +311,9 @@ def set_mastery_score(
     if score <= 1.0 and score >= 0.0:
         score = score * 100.0
     if score <= 49:
-        profile = "weak"
+        profile = "basic"
     elif score <= 74:
-        profile = "average"
+        profile = "intermediate"
     else:
-        profile = "strong"
+        profile = "advanced"
     return set_learner_profile(user_id, profile, source=source)

@@ -160,7 +160,7 @@ def generate_topic_ar_pack(*, topic_key: str) -> dict[str, Any]:
     # Prefer average/weak/strong available in the verified library.
     texts, used_lids = _pick_source_content_texts(
         source_lesson_ids=list(td.get("source_lesson_ids") or []),
-        profile_order=["average", "weak", "strong"],
+        profile_order=["intermediate", "basic", "advanced"],
     )
     if not texts:
         raise ValueError(

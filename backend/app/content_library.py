@@ -78,12 +78,9 @@ def _now() -> str:
 
 
 def _normalize_profile(profile: str | None) -> str:
-    p = (profile or "average").strip().lower()
-    if p == "smart":
-        return "strong"
-    if p not in ("weak", "average", "strong"):
-        return "average"
-    return p
+    from app.prompts import normalize_profile
+
+    return normalize_profile(profile or "intermediate")
 
 
 def _chunk_ids_from_row(d: dict[str, Any]) -> list[Any]:
@@ -186,13 +183,13 @@ def find_content_with_fallback(
     """
     Load library text for lesson at preferred profile, else any published profile.
 
-    Order: preferred → average → weak → strong (teacher often publishes one band first).
+    Order: preferred → intermediate → basic → advanced (teacher often publishes one band first).
     Returns (row, profile_used).
     """
     preferred = _normalize_profile(profile)
     evt = event or "lesson_start"
     order: list[str] = []
-    for p in (preferred, "average", "weak", "strong"):
+    for p in (preferred, "intermediate", "basic", "advanced"):
         if p not in order:
             order.append(p)
     for p in order:

@@ -74,7 +74,7 @@ Rules:
 
 def _pick_library_row(lesson_id: str) -> dict[str, Any] | None:
     """Prefer average → weak → smart published lesson_start content."""
-    for profile in ("average", "weak", "smart"):
+    for profile in ("intermediate", "basic", "advanced"):
         row = find_content(lesson_id=lesson_id, profile=profile, event="lesson_start")
         if row and (row.get("lesson_text") or "").strip():
             return row

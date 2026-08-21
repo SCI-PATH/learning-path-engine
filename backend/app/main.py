@@ -93,7 +93,7 @@ OPENAPI_TAGS = [
     },
     {
         "name": "analytics",
-        "description": "Learner profile (weak | average | strong) and legacy mastery score.",
+        "description": "Learner profile (basic | intermediate | advanced) and legacy mastery score.",
     },
     {
         "name": "teacher-library",
@@ -199,8 +199,8 @@ class LessonRequest(BaseModel):
     )
     profile: str | None = Field(
         default=None,
-        description="weak | average | strong (smart) — optional if stored learner profile exists.",
-        examples=["weak"],
+        description="basic | intermediate | advanced — optional if stored learner profile exists.",
+        examples=["basic"],
     )
     mastery_score: float | None = Field(
         default=None,
@@ -209,7 +209,7 @@ class LessonRequest(BaseModel):
     )
     use_stored_mastery: bool = Field(
         default=True,
-        description="When true, use stored learner profile (weak/average/strong) if not sent.",
+        description="When true, use stored learner profile (basic/intermediate/advanced) if not sent.",
     )
     event: str | None = Field(
         default="lesson_start",
@@ -243,7 +243,7 @@ class LessonResponse(BaseModel):
     )
     lesson_title: str | None = Field(default=None, description="Chapter title.")
     retrieval_topic_id: str | None = None
-    profile: str | None = Field(default=None, description="weak | average | strong")
+    profile: str | None = Field(default=None, description="basic | intermediate | advanced")
     presentation_mode: str | None = None
     status: str = Field(
         default="ready",
@@ -282,8 +282,8 @@ class LearnerProfileRequest(BaseModel):
     user_id: str = Field(..., examples=["demo-1"])
     profile: str = Field(
         ...,
-        description="weak | average | strong | smart",
-        examples=["strong"],
+        description="basic | intermediate | advanced",
+        examples=["advanced"],
     )
     source: str = Field(default="learner_profile_analytics", max_length=120)
     lesson_id: str | None = Field(
@@ -308,7 +308,7 @@ class LearnerProfileResponse(BaseModel):
 
 class TeacherGenerateRequest(BaseModel):
     lesson_id: str = Field(..., examples=["g7_sci_01"])
-    profile: str = Field(..., examples=["weak"])
+    profile: str = Field(..., examples=["basic"])
     event: str = Field(default="lesson_start")
     teacher_id: str = Field(default="teacher-1")
 
@@ -680,8 +680,8 @@ def read_current_lesson(
     ),
     profile: str | None = Query(
         None,
-        description="Knowledge level for library lookup when include_content=true (weak|average|strong). "
-        "Defaults to stored learner profile, then average fallback.",
+        description="Knowledge level for library lookup when include_content=true (basic|intermediate|advanced). "
+        "Defaults to stored learner profile, then intermediate fallback.",
     ),
 ) -> CurrentLessonResponse:
     st = get_progress(user_id)
@@ -718,8 +718,8 @@ def read_current_lesson(
 
     if include_content:
         stored = st.get("derived_profile")
-        use_profile = (profile or stored or "average")
-        use_profile = normalize_profile(use_profile) if use_profile else "average"
+        use_profile = (profile or stored or "intermediate")
+        use_profile = normalize_profile(use_profile) if use_profile else "intermediate"
         row, used_profile = find_content_with_fallback(
             lesson_id=enriched.current_lesson_id,
             profile=use_profile,
@@ -851,11 +851,11 @@ def _public_library_item(row: dict[str, Any]) -> dict[str, Any]:
     "/analytics/profile",
     response_model=LearnerProfileResponse,
     tags=["analytics"],
-    summary="Store learner profile category (weak|average|strong)",
+    summary="Store learner profile category (basic|intermediate|advanced)",
 )
 def post_analytics_profile(body: LearnerProfileRequest) -> LearnerProfileResponse:
     """
-    Learner Profile Analytics → store weak | average | strong (smart alias) directly.
+    Learner Profile Analytics → store basic | intermediate | advanced (legacy aliases ok) directly.
     Student lesson loads use stored profile when use_stored_mastery=true.
     """
     try:
@@ -867,7 +867,7 @@ def post_analytics_profile(body: LearnerProfileRequest) -> LearnerProfileRespons
         )
     except Exception as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
-    profile = st.get("derived_profile") or "average"
+    profile = st.get("derived_profile") or "intermediate"
     log.info(
         "analytics profile user=%r profile=%s source=%r lesson=%r grade=%s",
         body.user_id,
@@ -896,7 +896,7 @@ def get_analytics_profile(user_id: str) -> LearnerProfileResponse | None:
     st = get_progress(user_id)
     if not st.get("derived_profile"):
         return None
-    profile = st.get("derived_profile") or "average"
+    profile = st.get("derived_profile") or "intermediate"
     return LearnerProfileResponse(
         user_id=user_id,
         profile=profile,
@@ -924,7 +924,7 @@ def post_analytics_mastery(body: MasteryScoreRequest) -> MasteryScoreResponse:
         )
     except Exception as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
-    profile = st["derived_profile"] or "average"
+    profile = st["derived_profile"] or "intermediate"
     log.info(
         "analytics mastery(deprecated) user=%r profile=%s source=%r lesson=%r",
         body.user_id,
@@ -955,7 +955,7 @@ def get_analytics_mastery(user_id: str) -> MasteryScoreResponse | None:
     st = get_progress(user_id)
     if not st.get("derived_profile"):
         return None
-    profile = st.get("derived_profile") or "average"
+    profile = st.get("derived_profile") or "intermediate"
     return MasteryScoreResponse(
         user_id=user_id,
         mastery_score=st.get("mastery_score"),
@@ -976,7 +976,7 @@ def get_analytics_mastery(user_id: str) -> MasteryScoreResponse | None:
 def post_lesson(body: LessonRequest) -> LessonResponse:
     """
     Student path: load teacher-approved content for grade chapter + knowledge level.
-    Profile comes from request category or stored learner profile (weak/average/strong).
+    Profile comes from request category or stored learner profile (basic/intermediate/advanced).
     Falls back to any published profile for that chapter when exact match is missing.
     Does not generate unless STUDENT_ALLOW_GENERATE=true (dev escape hatch).
 

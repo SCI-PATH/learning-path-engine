@@ -100,7 +100,7 @@ def ensure_content_schema() -> None:
                   chapter_title       TEXT NOT NULL,
                   topic_id            TEXT,
                   student_level       TEXT NOT NULL
-                    CHECK (student_level IN ('weak', 'average', 'strong')),
+                    CHECK (student_level IN ('basic', 'intermediate', 'advanced')),
                   lesson_text         TEXT NOT NULL,
                   presentation_mode   TEXT,
                   status              TEXT NOT NULL DEFAULT 'approved'
@@ -121,6 +121,57 @@ def ensure_content_schema() -> None:
                 f"ALTER TABLE {SCHEMA}.verified_lesson_content ADD COLUMN IF NOT EXISTS updated_by TEXT",
             ):
                 cur.execute(ddl)
+
+            # Migrate legacy knowledge-level labels → basic | intermediate | advanced
+            for old, new in (
+                ("weak", "basic"),
+                ("average", "intermediate"),
+                ("strong", "advanced"),
+            ):
+                cur.execute(
+                    f"""
+                    UPDATE {SCHEMA}.verified_lesson_content
+                    SET student_level = %s
+                    WHERE student_level = %s
+                      AND NOT EXISTS (
+                        SELECT 1 FROM {SCHEMA}.verified_lesson_content v2
+                        WHERE v2.lesson_id = {SCHEMA}.verified_lesson_content.lesson_id
+                          AND v2.student_level = %s
+                      )
+                    """,
+                    (new, old, new),
+                )
+                cur.execute(
+                    f"DELETE FROM {SCHEMA}.verified_lesson_content WHERE student_level = %s",
+                    (old,),
+                )
+
+            # Replace CHECK constraint if Postgres still has the legacy one
+            cur.execute(
+                f"""
+                DO $$
+                DECLARE
+                  con_name text;
+                BEGIN
+                  SELECT c.conname INTO con_name
+                  FROM pg_constraint c
+                  JOIN pg_class t ON c.conrelid = t.oid
+                  JOIN pg_namespace n ON t.relnamespace = n.oid
+                  WHERE n.nspname = '{SCHEMA}'
+                    AND t.relname = 'verified_lesson_content'
+                    AND c.contype = 'c'
+                    AND pg_get_constraintdef(c.oid) ILIKE '%%student_level%%';
+                  IF con_name IS NOT NULL THEN
+                    EXECUTE format('ALTER TABLE {SCHEMA}.verified_lesson_content DROP CONSTRAINT %%I', con_name);
+                  END IF;
+                  ALTER TABLE {SCHEMA}.verified_lesson_content
+                    ADD CONSTRAINT verified_lesson_content_student_level_check
+                    CHECK (student_level IN ('basic', 'intermediate', 'advanced'));
+                EXCEPTION WHEN duplicate_object THEN
+                  NULL;
+                END $$;
+                """
+            )
 
             cur.execute(
                 f"""

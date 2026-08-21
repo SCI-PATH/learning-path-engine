@@ -242,7 +242,7 @@ def build_lesson(
     docs, ids = retrieve_chunks(topic_id=effective_topic, query_hint=q, top_k=k)
 
     # Strong learners: second retrieval pass for enrichment context (still chapter-scoped).
-    if prof == "strong" and lesson_title and normalize_event(event) == "lesson_start":
+    if prof == "advanced" and lesson_title and normalize_event(event) == "lesson_start":
         eq = build_enrichment_retrieval_query(
             topic_id=effective_topic,
             lesson_title=lesson_title,

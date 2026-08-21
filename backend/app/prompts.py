@@ -1,7 +1,8 @@
 """
 Structured prompt contracts for lesson generation (Phase A — prompt engineering).
 
-Profiles: weak | average | strong
+Profiles: basic | intermediate | advanced
+(Legacy aliases: weak→basic, average→intermediate, strong/smart→advanced)
 Events: lesson_start | game_failed_return | wrap_up_success
 """
 
@@ -9,34 +10,34 @@ from __future__ import annotations
 
 from typing import Literal
 
-Profile = Literal["weak", "average", "strong"]
+Profile = Literal["basic", "intermediate", "advanced"]
 
-# Retrieval breadth by learner level (strong learners get more textbook context).
+# Retrieval breadth by learner level (advanced learners get more textbook context).
 PROFILE_TOP_K: dict[Profile, int] = {
-    "weak": 10,
-    "average": 12,
-    "strong": 14,
+    "basic": 10,
+    "intermediate": 12,
+    "advanced": 14,
 }
 
 PROFILE_TEMPERATURE: dict[Profile, float] = {
-    "weak": 0.25,
-    "average": 0.3,
-    "strong": 0.35,
+    "basic": 0.25,
+    "intermediate": 0.3,
+    "advanced": 0.35,
 }
 
 PROFILE_MAX_TOKENS: dict[Profile, int] = {
-    "weak": 2000,
-    "average": 2600,
-    "strong": 3200,
+    "basic": 2000,
+    "intermediate": 2600,
+    "advanced": 3200,
 }
 
 # How the frontend should chunk lesson text for display (all use short slides).
 PresentationMode = Literal["stepped", "sectioned", "continuous"]
 
 PROFILE_PRESENTATION: dict[Profile, PresentationMode] = {
-    "weak": "stepped",
-    "average": "stepped",
-    "strong": "stepped",
+    "basic": "stepped",
+    "intermediate": "stepped",
+    "advanced": "stepped",
 }
 
 SYSTEM_ROLE = (
@@ -66,8 +67,8 @@ STRICT GROUNDING (must follow):
 
 # Concrete, non-overlapping pedagogy per learner level.
 PROFILE_PEDAGOGY: dict[Profile, str] = {
-    "weak": """
-LEARNER LEVEL: weak (needs scaffolding)
+    "basic": """
+LEARNER LEVEL: basic (needs scaffolding)
 GOAL: Make the chapter understandable in tiny steps without losing real science names.
 
 SENTENCE RULES:
@@ -83,8 +84,8 @@ TEACHING RULES:
 - Cover the chapter’s main ideas in order, but keep language very gentle.
 - Forbidden: Recap, Summary, Key takeaways, quiz questions, praise fluff ("Great job learning!").
 """.strip(),
-    "average": """
-LEARNER LEVEL: average (typical classroom learner)
+    "intermediate": """
+LEARNER LEVEL: intermediate (typical classroom learner)
 GOAL: Clear, complete chapter teaching at normal school depth — not baby-talk, not advanced enrichment.
 
 SENTENCE RULES:
@@ -98,11 +99,11 @@ TEACHING RULES:
 - Keep ALL scientific/technical names from the passages.
 - Include ONE short real-life link only if it appears in (or is directly implied by) the passages.
 - Depth: full chapter coverage of main sections; do not oversimplify away important terms.
-- Do NOT add a "Go deeper" section (that is only for smart learners).
+- Do NOT add a "Go deeper" section (that is only for advanced learners).
 - Forbidden: Recap, Summary, Key takeaways, quiz questions, baby-talk, filler praise.
 """.strip(),
-    "strong": """
-LEARNER LEVEL: strong / smart (ready for more challenge)
+    "advanced": """
+LEARNER LEVEL: advanced (ready for more challenge)
 GOAL: Precise, richer teaching plus an extra synthesis section — still only from passages.
 
 SENTENCE RULES:
@@ -141,12 +142,13 @@ EVENT_ADDENDUM: dict[str, str] = {
 
 
 def normalize_profile(raw: str) -> Profile:
-    v = (raw or "average").strip().lower()
-    if v in ("weak", "struggling", "beginner", "low"):
-        return "weak"
-    if v in ("strong", "advanced", "high", "smart"):
-        return "strong"
-    return "average"
+    """Canonical: basic | intermediate | advanced. Accepts legacy weak/average/strong/smart."""
+    v = (raw or "intermediate").strip().lower()
+    if v in ("basic", "weak", "struggling", "beginner", "low"):
+        return "basic"
+    if v in ("advanced", "strong", "high", "smart"):
+        return "advanced"
+    return "intermediate"
 
 
 def normalize_event(raw: str | None) -> str:
@@ -190,7 +192,7 @@ def build_retrieval_query(
 
 
 def build_enrichment_retrieval_query(*, topic_id: str, lesson_title: str | None) -> str:
-    """Second pass for strong learners — connections and applications within chapter theory."""
+    """Second pass for advanced learners — connections and applications within chapter theory."""
     chapter = topic_id.replace("_", " ")
     title = f' "{lesson_title}"' if lesson_title else ""
     return (
@@ -212,23 +214,23 @@ def build_system_message(*, profile: str, event: str | None) -> str:
     return "\n\n".join(parts)
 
 
-def _output_format_weak(evt: str) -> str:
+def _output_format_basic(evt: str) -> str:
     if evt == "wrap_up_success":
         return (
-            "OUTPUT FORMAT (weak):\n"
+            "OUTPUT FORMAT (basic):\n"
             "Line 1: Short title (3–6 words)\n"
             "Then: 3–4 very short sentences, each on its own line block (blank line between)\n"
             "No Recap / Summary / Go deeper"
         )
     if evt == "game_failed_return":
         return (
-            "OUTPUT FORMAT (weak):\n"
+            "OUTPUT FORMAT (basic):\n"
             "Line 1: Short title\n"
             "Then: gentle re-teach in very short sentences with blank lines between\n"
             "No Recap / Summary / Go deeper"
         )
     return (
-        "OUTPUT FORMAT (weak):\n"
+        "OUTPUT FORMAT (basic):\n"
         "Line 1: Short title (chapter topic)\n"
         "Then: ONLY short sentences with a blank line after each sentence\n"
         "For each new term: meaning first, then the real name from the passages\n"
@@ -237,16 +239,16 @@ def _output_format_weak(evt: str) -> str:
     )
 
 
-def _output_format_average(evt: str) -> str:
+def _output_format_intermediate(evt: str) -> str:
     if evt == "wrap_up_success":
         return (
-            "OUTPUT FORMAT (average):\n"
+            "OUTPUT FORMAT (intermediate):\n"
             "Line 1: Title\n"
             "Then: 3–4 clear closing sentences with blank lines between\n"
             "No Recap / Summary / Go deeper"
         )
     return (
-        "OUTPUT FORMAT (average):\n"
+        "OUTPUT FORMAT (intermediate):\n"
         "Line 1: Title\n"
         "Then: complete chapter teaching as short sentences with blank lines between sentences\n"
         "Order: introduce topic → define terms → explain process/ideas → include named examples\n"
@@ -255,16 +257,16 @@ def _output_format_average(evt: str) -> str:
     )
 
 
-def _output_format_strong(evt: str) -> str:
+def _output_format_advanced(evt: str) -> str:
     if evt == "wrap_up_success":
         return (
-            "OUTPUT FORMAT (strong/smart):\n"
+            "OUTPUT FORMAT (advanced):\n"
             "Line 1: Title\n"
             "Then: 4 precise closing sentences with blank lines between\n"
             "No Recap / Summary"
         )
     return (
-        "OUTPUT FORMAT (strong/smart):\n"
+        "OUTPUT FORMAT (advanced):\n"
         "Line 1: Title\n"
         "Then: thorough chapter teaching as precise sentences with blank lines between sentences\n"
         "Include definitions, mechanisms, comparisons, and named examples from passages\n"
@@ -275,11 +277,11 @@ def _output_format_strong(evt: str) -> str:
 
 
 def build_output_format(profile: Profile, event: str) -> str:
-    if profile == "weak":
-        return _output_format_weak(event)
-    if profile == "strong":
-        return _output_format_strong(event)
-    return _output_format_average(event)
+    if profile == "basic":
+        return _output_format_basic(event)
+    if profile == "advanced":
+        return _output_format_advanced(event)
+    return _output_format_intermediate(event)
 
 
 def build_user_message(

@@ -79,7 +79,7 @@ def youtube_embed_url(url: str) -> str | None:
 
 
 def _pick_library_row(lesson_id: str) -> dict[str, Any] | None:
-    for profile in ("average", "strong", "weak"):
+    for profile in ("intermediate", "advanced", "basic"):
         row = find_content(lesson_id=lesson_id, profile=profile, event="lesson_start")
         if row and (row.get("lesson_text") or "").strip():
             return row
