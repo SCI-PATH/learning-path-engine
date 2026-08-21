@@ -1,54 +1,42 @@
 """
-Load the Grade 6 Science PDF, split into overlapping chunks, store in Chroma.
+Load Grade 6–9 Science PDFs, split into overlapping chunks, store in Chroma.
 
 Metadata:
-- topic_id: Chroma filter — per-chapter ids when using curriculum (e.g. g6_science_ch03),
-  or a single bucket (e.g. g6_science) for whole-book ingest.
-- lesson_id: set when chapter-scoped (matches curriculum lesson_id).
-- content_type: "theory" | "non_theory" based on simple textbook heuristics.
-- page: PDF page number (1-based).
-- chunk_index: chunk order within that page.
-- source: filename for debugging.
+- topic_id: Chroma filter — Assessment Module / skill hierarchy ID
+  (e.g. G7_S1_PLA_DIVER). Shared with Learner Profile Analytics.
+- lesson_id: set when chapter-scoped (matches curriculum lesson_id)
+- skill_section_id: optional section bucket (e.g. G7_S1)
+- skill_topic_ids: comma-separated sibling skill IDs for this chapter
+- content_type: "theory" | "non_theory"
+- page: PDF page number (1-based)
+- chunk_index: chunk order within that page
+- source: PDF filename
+- grade: optional grade number from curriculum
 """
 
 from __future__ import annotations
 
-import re
 from pathlib import Path
 from typing import Iterable
 
 from pypdf import PdfReader
 
 from app.chroma_setup import COLLECTION_NAME, get_chroma_client, get_textbook_collection
+from app.content_filters import clean_page_text, content_type_for_chunk
 from app.curriculum import load_curriculum
 
-# app/textbook_ingest.py -> parents[2] == repo root (learning-path-engine/)
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_PDF_PATH = REPO_ROOT / "science G-6 E.pdf"
-NON_THEORY_HINTS = (
-    "activity",
-    "activities",
-    "let us do",
-    "project",
-    "worksheet",
-    "assignment",
-    "homework",
-    "classroom task",
-    "group work",
-    "experiment",
-    "try this",
-    "practical",
-    "background",
-    "teacher note",
-    "for your extra knowledge",
-    "summary",
-    "exercise",
-    "you will need",
-    "method",
-    "choose",
-    "mark true",
-    "fig.",
-    "figure",
+
+# All known textbooks at repo root (ingest-all uses this list).
+DEFAULT_PDF_PATHS: tuple[Path, ...] = (
+    REPO_ROOT / "science G-6 E.pdf",
+    REPO_ROOT / "science G-7 P-I E.pdf",
+    REPO_ROOT / "science G-7 P-II E.pdf",
+    REPO_ROOT / "science G8 P-I E.pdf",
+    REPO_ROOT / "science G-8 P-II E.pdf",
+    REPO_ROOT / "science G-9 P-I E.pdf",
+    REPO_ROOT / "Science Part II English G-9.pdf",
 )
 
 
@@ -70,49 +58,10 @@ def chunk_text(text: str, *, chunk_size: int = 1200, overlap: int = 200) -> list
     return chunks
 
 
-def clean_page_text(raw: str) -> str:
-    """
-    Remove common textbook boilerplate (headers/footers/figure captions/assignment scaffolding).
-    """
-    lines = [ln.strip() for ln in (raw or "").splitlines()]
-    kept: list[str] = []
-    for ln in lines:
-        if not ln:
-            continue
-        low = ln.lower()
-        if re.fullmatch(r"\d{1,4}", low):
-            continue
-        if "science |" in low:
-            continue
-        if re.match(r"^fig\.?\s*\d+", low):
-            continue
-        if low.startswith(("assignment", "activity", "exercise", "summary")):
-            continue
-        if low.startswith(("you will need", "method", "for your extra knowledge")):
-            continue
-        kept.append(ln)
-    return "\n".join(kept)
-
-
-def content_type_for_chunk(text: str) -> str:
-    """
-    Tag chunk as theory/non_theory using conservative textbook cues.
-    """
-    t = text.lower()
-    # Too little prose usually means captions/listing noise.
-    if len(re.findall(r"[a-zA-Z]{2,}", t)) < 45:
-        return "non_theory"
-    if any(hint in t for hint in NON_THEORY_HINTS):
-        return "non_theory"
-    if "?" in t and ("discuss" in t or "answer" in t):
-        return "non_theory"
-    return "theory"
-
-
 def iter_pdf_chunks(
     pdf_path: Path,
     *,
-    topic_id: str = "g6_science",
+    topic_id: str = "G6_S1_ORG_CHARS",
     chunk_size: int = 1200,
     overlap: int = 200,
     chapter_scoped: bool = True,
@@ -121,16 +70,21 @@ def iter_pdf_chunks(
     """
     Yield (document_text, metadata_dict, chunk_id) for each chunk.
 
-    If chapter_scoped is True, topic_id and lesson_id come from app/data/curriculum.json
-    by page number; the topic_id argument is ignored.
+    If chapter_scoped is True, topic_id and lesson_id come from curriculum.json
+    by (source PDF name + page number).
     """
     curriculum = load_curriculum() if chapter_scoped else None
     reader = PdfReader(str(pdf_path))
     source_name = pdf_path.name
+    book = curriculum.book_for_source(source_name) if curriculum else None
+    grade = book.grade if book else None
+
     for page_index, page in enumerate(reader.pages):
         page_num = page_index + 1
         if curriculum:
-            scoped_topic, lesson_id = curriculum.topic_id_for_page(page_num)
+            scoped_topic, lesson_id = curriculum.topic_id_for_page(
+                page_num, source=source_name
+            )
         else:
             scoped_topic, lesson_id = topic_id, None
         raw = clean_page_text(page.extract_text() or "")
@@ -140,6 +94,7 @@ def iter_pdf_chunks(
             content_type = content_type_for_chunk(chunk)
             if theory_only and content_type != "theory":
                 continue
+            # Include source in id so multi-book ingest never collides.
             chunk_id = f"{source_name}::p{page_num}::c{chunk_index}"
             metadata: dict = {
                 "topic_id": scoped_topic,
@@ -150,6 +105,17 @@ def iter_pdf_chunks(
             }
             if lesson_id:
                 metadata["lesson_id"] = lesson_id
+                entry = curriculum.by_lesson_id(lesson_id) if curriculum else None
+                if entry:
+                    if entry.skill_section_id:
+                        metadata["skill_section_id"] = entry.skill_section_id
+                    if entry.skill_topic_ids:
+                        # Chroma metadata values must be scalars
+                        metadata["skill_topic_ids"] = ",".join(entry.skill_topic_ids)
+                    if entry.legacy_topic_id:
+                        metadata["legacy_topic_id"] = entry.legacy_topic_id
+            if grade is not None:
+                metadata["grade"] = int(grade)
             yield chunk, metadata, chunk_id
 
 
@@ -161,14 +127,15 @@ def run_ingest(
     chapter_scoped: bool = True,
     theory_only: bool = True,
 ) -> int:
-    """
-    Ingest PDF into Chroma. Returns number of chunks written.
-    """
+    """Ingest one PDF into Chroma. Returns number of chunks written."""
     path = pdf_path or DEFAULT_PDF_PATH
     if not path.is_file():
         raise FileNotFoundError(
-            f"PDF not found: {path}. Place 'science G-6 E.pdf' at repo root or pass pdf_path."
+            f"PDF not found: {path}. Place textbooks at repo root or pass pdf_path."
         )
+
+    # Bust curriculum cache so fresh curriculum.json is used after edits.
+    load_curriculum.cache_clear()
 
     collection = get_textbook_collection(reset=clear_collection)
     docs: list[str] = []
@@ -193,6 +160,35 @@ def run_ingest(
         collection.add(documents=docs, metadatas=metas, ids=ids)
 
     return count
+
+
+def run_ingest_many(
+    pdf_paths: Iterable[Path] | None = None,
+    *,
+    clear_collection: bool = True,
+    chapter_scoped: bool = True,
+    theory_only: bool = True,
+) -> dict[str, int]:
+    """
+    Ingest multiple PDFs into the same Chroma collection.
+    Clears once (if requested), then appends each book.
+    """
+    paths = [Path(p) for p in (pdf_paths or DEFAULT_PDF_PATHS)]
+    missing = [str(p) for p in paths if not p.is_file()]
+    if missing:
+        raise FileNotFoundError("Missing PDF(s):\n  " + "\n  ".join(missing))
+
+    load_curriculum.cache_clear()
+    results: dict[str, int] = {}
+    for i, path in enumerate(paths):
+        n = run_ingest(
+            path,
+            clear_collection=(clear_collection and i == 0),
+            chapter_scoped=chapter_scoped,
+            theory_only=theory_only,
+        )
+        results[path.name] = n
+    return results
 
 
 def collection_stats() -> dict:

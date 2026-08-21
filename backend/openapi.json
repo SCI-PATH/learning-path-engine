@@ -1,0 +1,3203 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Learning Path Engine",
+    "description": "## SCI-PATH Learning Path Engine\n\nCurriculum-ordered lessons, teacher-approved content, progress, media, and AR.\n\n### Cross-service: student name & grade\nFetch identity from User Management: `GET http://localhost:8001/students/{student_id}` \u2192 `{ student_id, full_name, grade }`.\n\n### Current lesson being taught\n- `GET /lesson/current?user_id=\u2026` \u2192 **lesson_id**, **grade**, **chapter_number**, title, resume step\n- Add `include_content=true` to also return published **lesson_text** (learning material)\n- `POST /lesson` with `{ user_id, lesson_id, profile? }` \u2192 full learning material for that chapter\n- `GET /lesson/{lesson_id}/media` \u2192 YouTube + summary for the chapter\n- `GET /progress?user_id=\u2026` \u2192 path position + stored grade/profile\n\nLesson ids look like `g6_sci_03` (grade 6, chapter 3). Interactive docs: `/docs` \u00b7 `/redoc`",
+    "contact": {
+      "name": "SCI-PATH"
+    },
+    "version": "0.2.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Health check",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Health Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-log": {
+      "post": {
+        "summary": "Client Log",
+        "operationId": "client_log_client_log_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClientLogRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/debug/chroma-stats": {
+      "get": {
+        "summary": "Debug Chroma Stats",
+        "description": "How many chunks are stored (0 if ingest not run yet).",
+        "operationId": "debug_chroma_stats_debug_chroma_stats_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Debug Chroma Stats Debug Chroma Stats Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/debug/search": {
+      "post": {
+        "summary": "Debug Search",
+        "operationId": "debug_search_debug_search_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/curriculum": {
+      "get": {
+        "tags": [
+          "curriculum"
+        ],
+        "summary": "List ordered chapters (optionally by grade)",
+        "description": "Ordered lesson path for the UI.\nPass ?grade=7 to get only Grade 7 (Parts I+II merged into one path).",
+        "operationId": "get_curriculum_curriculum_get",
+        "parameters": [
+          {
+            "name": "grade",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Grade"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Curriculum Curriculum Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/curriculum/resolve/{topic_or_skill_id}": {
+      "get": {
+        "tags": [
+          "curriculum"
+        ],
+        "summary": "Resolve topic/skill/legacy id \u2192 lesson + chroma topic",
+        "description": "Map Assessment / Excel / legacy / lesson ids \u2192 Chroma primary topic_id.\nFor other components (Assessment, Analytics) that share Chroma Topic IDs.",
+        "operationId": "resolve_topic_curriculum_resolve__topic_or_skill_id__get",
+        "parameters": [
+          {
+            "name": "topic_or_skill_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Topic Or Skill Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Resolve Topic Curriculum Resolve  Topic Or Skill Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/migrate-topic-ids": {
+      "post": {
+        "summary": "Admin Migrate Topic Ids",
+        "description": "Rewrite content_library topic_id columns from legacy \u2192 Assessment-style IDs.",
+        "operationId": "admin_migrate_topic_ids_admin_migrate_topic_ids_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Admin Migrate Topic Ids Admin Migrate Topic Ids Post"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/progress": {
+      "get": {
+        "tags": [
+          "progress"
+        ],
+        "summary": "Get learner progress (current lesson, grade, chapter)",
+        "operationId": "read_progress_progress_get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Same as user-management student_id.",
+              "title": "User Id"
+            },
+            "description": "Same as user-management student_id."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgressResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "progress"
+        ],
+        "summary": "Update progress (set_current, set_grade, record_quiz, \u2026)",
+        "operationId": "write_progress_progress_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProgressUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgressResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/lesson/current": {
+      "get": {
+        "tags": [
+          "student-lessons"
+        ],
+        "summary": "Current lesson being taught (id, grade, chapter + optional material)",
+        "operationId": "read_current_lesson_lesson_current_get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Learner id (user-management student_id).",
+              "title": "User Id"
+            },
+            "description": "Learner id (user-management student_id).",
+            "example": "demo-1"
+          },
+          {
+            "name": "include_content",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "If true, attach published learning material (lesson_text) for the current chapter.",
+              "default": false,
+              "title": "Include Content"
+            },
+            "description": "If true, attach published learning material (lesson_text) for the current chapter."
+          },
+          {
+            "name": "profile",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Knowledge level for library lookup when include_content=true (weak|average|strong). Defaults to stored learner profile, then average fallback.",
+              "title": "Profile"
+            },
+            "description": "Knowledge level for library lookup when include_content=true (weak|average|strong). Defaults to stored learner profile, then average fallback."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns lesson_id, grade, chapter_number, topic_id. With include_content=true also returns published lesson_text.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentLessonResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/analytics/profile": {
+      "post": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Store learner profile category (weak|average|strong)",
+        "description": "Learner Profile Analytics \u2192 store weak | average | strong (smart alias) directly.\nStudent lesson loads use stored profile when use_stored_mastery=true.",
+        "operationId": "post_analytics_profile_analytics_profile_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LearnerProfileRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LearnerProfileResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/analytics/profile/{user_id}": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Get stored learner profile",
+        "operationId": "get_analytics_profile_analytics_profile__user_id__get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/LearnerProfileResponse"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Response Get Analytics Profile Analytics Profile  User Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/analytics/mastery": {
+      "post": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Store mastery score (deprecated \u2014 prefer /analytics/profile)",
+        "description": "Deprecated: prefer POST /analytics/profile with profile category.",
+        "operationId": "post_analytics_mastery_analytics_mastery_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MasteryScoreRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MasteryScoreResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/analytics/mastery/{user_id}": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Get mastery score (deprecated)",
+        "description": "Deprecated: prefer GET /analytics/profile/{user_id}.",
+        "operationId": "get_analytics_mastery_analytics_mastery__user_id__get",
+        "deprecated": true,
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/MasteryScoreResponse"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Response Get Analytics Mastery Analytics Mastery  User Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/lesson": {
+      "post": {
+        "tags": [
+          "student-lessons"
+        ],
+        "summary": "Load learning material for a chapter (lesson_id + grade/chapter in response)",
+        "description": "Student path: load teacher-approved content for grade chapter + knowledge level.\nProfile comes from request category or stored learner profile (weak/average/strong).\nFalls back to any published profile for that chapter when exact match is missing.\nDoes not generate unless STUDENT_ALLOW_GENERATE=true (dev escape hatch).\n\nResponse includes `lesson_id`, `grade`, `chapter_number`, and `lesson_text`.",
+        "operationId": "post_lesson_lesson_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LessonRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/teacher/generate": {
+      "post": {
+        "tags": [
+          "teacher-library"
+        ],
+        "summary": "Generate chapter preview (not saved until publish)",
+        "description": "Teacher generates a preview from Chroma + LLM. Not saved until publish.",
+        "operationId": "teacher_generate_teacher_generate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TeacherGenerateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Teacher Generate Teacher Generate Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/teacher/library": {
+      "post": {
+        "tags": [
+          "teacher-library"
+        ],
+        "summary": "Publish chapter learning material to library",
+        "description": "Approve / save content permanently (upsert by lesson + profile + event).",
+        "operationId": "teacher_publish_teacher_library_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TeacherPublishRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Teacher Publish Teacher Library Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "teacher-library"
+        ],
+        "summary": "Browse published chapter content",
+        "description": "Browse permanent library filtered by grade / level / chapter.",
+        "operationId": "teacher_list_library_teacher_library_get",
+        "parameters": [
+          {
+            "name": "grade",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Grade"
+            }
+          },
+          {
+            "name": "profile",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Profile"
+            }
+          },
+          {
+            "name": "lesson_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Lesson Id"
+            }
+          },
+          {
+            "name": "event",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Event"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 200,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Teacher List Library Teacher Library Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/teacher/library/{content_id}": {
+      "get": {
+        "summary": "Teacher Get Library Item",
+        "operationId": "teacher_get_library_item_teacher_library__content_id__get",
+        "parameters": [
+          {
+            "name": "content_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Content Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Teacher Get Library Item Teacher Library  Content Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Teacher Update Library",
+        "operationId": "teacher_update_library_teacher_library__content_id__put",
+        "parameters": [
+          {
+            "name": "content_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Content Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TeacherUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Teacher Update Library Teacher Library  Content Id  Put"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Teacher Delete Library",
+        "operationId": "teacher_delete_library_teacher_library__content_id__delete",
+        "parameters": [
+          {
+            "name": "content_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Content Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Teacher Delete Library Teacher Library  Content Id  Delete"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/teacher/library/{content_id}/regenerate": {
+      "post": {
+        "summary": "Teacher Regenerate",
+        "description": "Regenerate a preview for an existing library row (does not overwrite until publish).",
+        "operationId": "teacher_regenerate_teacher_library__content_id__regenerate_post",
+        "parameters": [
+          {
+            "name": "content_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Content Id"
+            }
+          },
+          {
+            "name": "teacher_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "teacher-1",
+              "title": "Teacher Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Teacher Regenerate Teacher Library  Content Id  Regenerate Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/teacher/ar-topics": {
+      "get": {
+        "summary": "Teacher List Ar Topics",
+        "description": "Predefined topic-level AR packs (Plants, Electricity, etc.).\nTeacher can generate, verify, then approve them.",
+        "operationId": "teacher_list_ar_topics_teacher_ar_topics_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Teacher List Ar Topics Teacher Ar Topics Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/teacher/ar-topic/{topic_key}": {
+      "get": {
+        "summary": "Teacher Get Ar Topic",
+        "operationId": "teacher_get_ar_topic_teacher_ar_topic__topic_key__get",
+        "parameters": [
+          {
+            "name": "topic_key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Topic Key"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Teacher Get Ar Topic Teacher Ar Topic  Topic Key  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/teacher/ar-topic/{topic_key}/generate": {
+      "post": {
+        "summary": "Teacher Generate Ar Topic",
+        "operationId": "teacher_generate_ar_topic_teacher_ar_topic__topic_key__generate_post",
+        "parameters": [
+          {
+            "name": "topic_key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Topic Key"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Teacher Generate Ar Topic Teacher Ar Topic  Topic Key  Generate Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/teacher/ar-topic/{topic_key}/approve": {
+      "post": {
+        "summary": "Teacher Approve Ar Topic",
+        "operationId": "teacher_approve_ar_topic_teacher_ar_topic__topic_key__approve_post",
+        "parameters": [
+          {
+            "name": "topic_key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Topic Key"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Teacher Approve Ar Topic Teacher Ar Topic  Topic Key  Approve Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ar-topic/{topic_key}": {
+      "get": {
+        "summary": "Get Public Ar Topic",
+        "operationId": "get_public_ar_topic_ar_topic__topic_key__get",
+        "parameters": [
+          {
+            "name": "topic_key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Topic Key"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Public Ar Topic Ar Topic  Topic Key  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/lesson/{lesson_id}/ar": {
+      "get": {
+        "tags": [
+          "ar"
+        ],
+        "summary": "Get AR pack for a chapter",
+        "description": "Get AR for this chapter (same for all knowledge levels).\n\nDefault generate=false: read stored package only (Unity / students).\nPass generate=true only from teacher tooling when needed.",
+        "operationId": "get_lesson_ar_lesson__lesson_id__ar_get",
+        "parameters": [
+          {
+            "name": "lesson_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Lesson Id"
+            }
+          },
+          {
+            "name": "force",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Force"
+            }
+          },
+          {
+            "name": "generate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Generate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Lesson Ar Lesson  Lesson Id  Ar Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/teacher/ar": {
+      "get": {
+        "summary": "Teacher List Ar",
+        "operationId": "teacher_list_ar_teacher_ar_get",
+        "parameters": [
+          {
+            "name": "grade",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Grade"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Teacher List Ar Teacher Ar Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/teacher/ar/{lesson_id}/regenerate": {
+      "post": {
+        "summary": "Teacher Regenerate Ar",
+        "description": "Force regenerate AR scenes from the published lesson library text.",
+        "operationId": "teacher_regenerate_ar_teacher_ar__lesson_id__regenerate_post",
+        "parameters": [
+          {
+            "name": "lesson_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Lesson Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Teacher Regenerate Ar Teacher Ar  Lesson Id  Regenerate Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/teacher/ar/{lesson_id}": {
+      "put": {
+        "summary": "Teacher Upsert Ar",
+        "operationId": "teacher_upsert_ar_teacher_ar__lesson_id__put",
+        "parameters": [
+          {
+            "name": "lesson_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Lesson Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TeacherARUpsertRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Teacher Upsert Ar Teacher Ar  Lesson Id  Put"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Teacher Delete Ar",
+        "operationId": "teacher_delete_ar_teacher_ar__lesson_id__delete",
+        "parameters": [
+          {
+            "name": "lesson_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Lesson Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Teacher Delete Ar Teacher Ar  Lesson Id  Delete"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/lesson/{lesson_id}/media": {
+      "get": {
+        "tags": [
+          "student-lessons"
+        ],
+        "summary": "Chapter media (YouTube + summary) for a lesson_id",
+        "description": "Static chapter media: YouTube + summary infographic.\nStudents (preview=false) only get approved summary. Teachers can pass preview=true.",
+        "operationId": "get_lesson_media_lesson__lesson_id__media_get",
+        "parameters": [
+          {
+            "name": "lesson_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Lesson Id"
+            }
+          },
+          {
+            "name": "preview",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Preview"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Lesson Media Lesson  Lesson Id  Media Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/teacher/media/{lesson_id}": {
+      "get": {
+        "tags": [
+          "teacher-media"
+        ],
+        "summary": "Get chapter YouTube + summary (teacher view)",
+        "operationId": "teacher_get_media_teacher_media__lesson_id__get",
+        "parameters": [
+          {
+            "name": "lesson_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Lesson Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Teacher Get Media Teacher Media  Lesson Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/teacher/media/{lesson_id}/youtube": {
+      "put": {
+        "tags": [
+          "teacher-media"
+        ],
+        "summary": "Set YouTube URL for a chapter",
+        "operationId": "teacher_set_youtube_teacher_media__lesson_id__youtube_put",
+        "parameters": [
+          {
+            "name": "lesson_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Lesson Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TeacherLessonMediaRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Teacher Set Youtube Teacher Media  Lesson Id  Youtube Put"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/teacher/media/{lesson_id}/videos": {
+      "put": {
+        "tags": [
+          "teacher-media"
+        ],
+        "summary": "Replace the ordered video library for a chapter",
+        "operationId": "teacher_set_videos_teacher_media__lesson_id__videos_put",
+        "parameters": [
+          {
+            "name": "lesson_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Lesson Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TeacherLessonVideosRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Teacher Set Videos Teacher Media  Lesson Id  Videos Put"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/teacher/media/{lesson_id}/summary/generate": {
+      "post": {
+        "tags": [
+          "teacher-media"
+        ],
+        "summary": "Generate chapter summary infographic",
+        "operationId": "teacher_generate_summary_teacher_media__lesson_id__summary_generate_post",
+        "parameters": [
+          {
+            "name": "lesson_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Lesson Id"
+            }
+          },
+          {
+            "name": "teacher_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "teacher-1",
+              "title": "Teacher Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Teacher Generate Summary Teacher Media  Lesson Id  Summary Generate Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/teacher/media/{lesson_id}/summary/approve": {
+      "post": {
+        "tags": [
+          "teacher-media"
+        ],
+        "summary": "Approve chapter summary for students",
+        "operationId": "teacher_approve_summary_teacher_media__lesson_id__summary_approve_post",
+        "parameters": [
+          {
+            "name": "lesson_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Lesson Id"
+            }
+          },
+          {
+            "name": "teacher_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "teacher-1",
+              "title": "Teacher Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Teacher Approve Summary Teacher Media  Lesson Id  Summary Approve Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AssessmentScope": {
+        "properties": {
+          "topic_id": {
+            "type": "string",
+            "title": "Topic Id"
+          },
+          "chunk_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Chunk Ids"
+          },
+          "lesson_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lesson Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "topic_id"
+        ],
+        "title": "AssessmentScope"
+      },
+      "ClientLogRequest": {
+        "properties": {
+          "context": {
+            "type": "string",
+            "maxLength": 160,
+            "title": "Context",
+            "default": "unknown"
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Message",
+            "default": ""
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 8000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          },
+          "user_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 160
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Id"
+          },
+          "offline": {
+            "type": "boolean",
+            "title": "Offline",
+            "default": false
+          },
+          "user_agent": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 520
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Agent"
+          },
+          "component_stack": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 8000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Component Stack"
+          }
+        },
+        "type": "object",
+        "title": "ClientLogRequest",
+        "description": "Browser-reported failures; logged server-side only (not returned to learners)."
+      },
+      "CurrentLessonResponse": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id",
+            "examples": [
+              "demo-1"
+            ]
+          },
+          "current_lesson_id": {
+            "type": "string",
+            "title": "Current Lesson Id",
+            "description": "Curriculum lesson id for the chapter in progress.",
+            "examples": [
+              "g6_sci_03"
+            ]
+          },
+          "current_lesson_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Lesson Title",
+            "examples": [
+              "Water as a Natural Resource"
+            ]
+          },
+          "grade": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grade",
+            "description": "Grade 6\u20139.",
+            "examples": [
+              6
+            ]
+          },
+          "chapter_number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chapter Number",
+            "description": "1-based chapter number (e.g. 3 for g6_sci_03 / G6_S3).",
+            "examples": [
+              3
+            ]
+          },
+          "topic_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Topic Id",
+            "description": "Assessment primary topic id for this chapter.",
+            "examples": [
+              "G6_S3_WAT_RESOUR"
+            ]
+          },
+          "skill_section_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Skill Section Id",
+            "examples": [
+              "G6_S3"
+            ]
+          },
+          "next_lesson_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Lesson Id"
+          },
+          "current_index": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Index"
+          },
+          "lessons_total": {
+            "type": "integer",
+            "title": "Lessons Total",
+            "default": 0
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At"
+          },
+          "resume_step_index": {
+            "type": "integer",
+            "title": "Resume Step Index",
+            "default": 0
+          },
+          "lesson_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lesson Text",
+            "description": "Published learning material when include_content=true."
+          },
+          "content_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content Status",
+            "description": "ready | unavailable | omitted \u2014 set when include_content=true."
+          },
+          "content_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content Id"
+          },
+          "profile": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile",
+            "description": "Profile used to pick library text."
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "current_lesson_id",
+          "updated_at"
+        ],
+        "title": "CurrentLessonResponse",
+        "description": "Identity + optional learning material for the lesson currently being taught.\nUse `include_content=true` to attach published `lesson_text`."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "LearnerProfileRequest": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id",
+            "examples": [
+              "demo-1"
+            ]
+          },
+          "profile": {
+            "type": "string",
+            "title": "Profile",
+            "description": "weak | average | strong | smart",
+            "examples": [
+              "strong"
+            ]
+          },
+          "source": {
+            "type": "string",
+            "maxLength": 120,
+            "title": "Source",
+            "default": "learner_profile_analytics"
+          },
+          "lesson_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lesson Id",
+            "description": "Optional chapter context (logged only)."
+          },
+          "grade": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grade",
+            "description": "Optional grade from user session (6\u20139). Stored when provided.",
+            "examples": [
+              7
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "profile"
+        ],
+        "title": "LearnerProfileRequest",
+        "description": "Learner Profile Analytics \u2192 store category directly (no score math)."
+      },
+      "LearnerProfileResponse": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "profile": {
+            "type": "string",
+            "title": "Profile"
+          },
+          "profile_label": {
+            "type": "string",
+            "title": "Profile Label"
+          },
+          "grade": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grade"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "profile",
+          "profile_label",
+          "source",
+          "updated_at"
+        ],
+        "title": "LearnerProfileResponse"
+      },
+      "LessonRequest": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id",
+            "examples": [
+              "demo-1"
+            ]
+          },
+          "topic_id": {
+            "type": "string",
+            "title": "Topic Id",
+            "description": "Assessment Topic ID, sibling skill ID, or legacy Chroma id. Ignored when lesson_id is set.",
+            "default": "G6_S1_ORG_CHARS",
+            "examples": [
+              "G7_S1_PLA_DIVER",
+              "G7_S1_PLA_CLASSIF",
+              "g7_science_ch01"
+            ]
+          },
+          "lesson_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lesson Id",
+            "description": "Chapter / lesson to load from the teacher library.",
+            "examples": [
+              "g6_sci_03"
+            ]
+          },
+          "profile": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile",
+            "description": "weak | average | strong (smart) \u2014 optional if stored learner profile exists.",
+            "examples": [
+              "weak"
+            ]
+          },
+          "mastery_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mastery Score",
+            "description": "Deprecated. Prefer profile category from Learner Profile Analytics.",
+            "examples": [
+              null
+            ]
+          },
+          "use_stored_mastery": {
+            "type": "boolean",
+            "title": "Use Stored Mastery",
+            "description": "When true, use stored learner profile (weak/average/strong) if not sent.",
+            "default": true
+          },
+          "event": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Event",
+            "description": "lesson_start | game_failed_return | wrap_up_success.",
+            "default": "lesson_start"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id"
+        ],
+        "title": "LessonRequest",
+        "description": "Student starts a lesson \u2014 content comes from the teacher library."
+      },
+      "LessonResponse": {
+        "properties": {
+          "lesson_text": {
+            "type": "string",
+            "title": "Lesson Text",
+            "description": "Learning material body (markdown/plain).",
+            "default": ""
+          },
+          "minion_state": {
+            "type": "string",
+            "title": "Minion State",
+            "default": "idle"
+          },
+          "source_chunk_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Source Chunk Ids"
+          },
+          "assessment_scope": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AssessmentScope"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "lesson_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lesson Id",
+            "description": "Curriculum lesson id, e.g. g6_sci_03.",
+            "examples": [
+              "g6_sci_03"
+            ]
+          },
+          "grade": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grade",
+            "description": "Grade 6\u20139 for this chapter.",
+            "examples": [
+              6
+            ]
+          },
+          "chapter_number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chapter Number",
+            "description": "1-based chapter number within the grade path.",
+            "examples": [
+              3
+            ]
+          },
+          "lesson_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lesson Title",
+            "description": "Chapter title."
+          },
+          "retrieval_topic_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retrieval Topic Id"
+          },
+          "profile": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile",
+            "description": "weak | average | strong"
+          },
+          "presentation_mode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Presentation Mode"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "ready | unavailable \u2014 student only learns when ready.",
+            "default": "ready"
+          },
+          "content_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content Id"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message"
+          },
+          "mastery_score_used": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mastery Score Used"
+          },
+          "profile_source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile Source"
+          }
+        },
+        "type": "object",
+        "title": "LessonResponse",
+        "description": "Published (or generated) learning material for a chapter + knowledge level."
+      },
+      "LessonVideoItem": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 120,
+            "title": "Title",
+            "default": ""
+          },
+          "url": {
+            "type": "string",
+            "title": "Url",
+            "description": "YouTube watch, share, shorts, or embed URL"
+          }
+        },
+        "type": "object",
+        "required": [
+          "url"
+        ],
+        "title": "LessonVideoItem"
+      },
+      "MasteryScoreRequest": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id",
+            "examples": [
+              "demo-1"
+            ]
+          },
+          "mastery_score": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Mastery Score",
+            "description": "Deprecated 0\u2013100 score"
+          },
+          "source": {
+            "type": "string",
+            "maxLength": 120,
+            "title": "Source",
+            "default": "learner_profile_analytics"
+          },
+          "lesson_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lesson Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "mastery_score"
+        ],
+        "title": "MasteryScoreRequest",
+        "description": "Deprecated score payload \u2014 prefer LearnerProfileRequest."
+      },
+      "MasteryScoreResponse": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "mastery_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mastery Score"
+          },
+          "profile": {
+            "type": "string",
+            "title": "Profile"
+          },
+          "profile_label": {
+            "type": "string",
+            "title": "Profile Label"
+          },
+          "thresholds": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "number"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Thresholds"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "profile",
+          "profile_label",
+          "source",
+          "updated_at"
+        ],
+        "title": "MasteryScoreResponse",
+        "description": "Legacy response shape; use profile field, ignore score/thresholds."
+      },
+      "ProgressResponse": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "current_lesson_id": {
+            "type": "string",
+            "title": "Current Lesson Id",
+            "description": "Lesson currently being taught.",
+            "examples": [
+              "g6_sci_03"
+            ]
+          },
+          "completed_lesson_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Completed Lesson Ids"
+          },
+          "quiz_by_lesson": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Quiz By Lesson"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At"
+          },
+          "current_index": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Index",
+            "description": "0-based index in the grade path."
+          },
+          "lessons_total": {
+            "type": "integer",
+            "title": "Lessons Total",
+            "default": 0
+          },
+          "next_lesson_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Lesson Id"
+          },
+          "resume_step_index": {
+            "type": "integer",
+            "title": "Resume Step Index",
+            "default": 0
+          },
+          "grade": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grade",
+            "description": "Stored learner grade 6\u20139."
+          },
+          "chapter_number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chapter Number",
+            "description": "Chapter number for current_lesson_id."
+          },
+          "mastery_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mastery Score"
+          },
+          "derived_profile": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Derived Profile"
+          },
+          "profile_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "current_lesson_id",
+          "completed_lesson_ids",
+          "quiz_by_lesson",
+          "updated_at"
+        ],
+        "title": "ProgressResponse",
+        "description": "Learner position on the ordered curriculum path."
+      },
+      "ProgressUpdateRequest": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "set_current",
+              "mark_complete",
+              "record_quiz",
+              "save_state",
+              "set_grade"
+            ],
+            "title": "Action"
+          },
+          "lesson_id": {
+            "type": "string",
+            "title": "Lesson Id",
+            "description": "Required for most actions; optional for set_grade.",
+            "default": "",
+            "examples": [
+              "g6_sci_03"
+            ]
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score",
+            "description": "0..1 for record_quiz; if >= server threshold, lesson is marked complete and path advances."
+          },
+          "step_index": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Step Index",
+            "description": "Current step/page index in lesson stage for resume support."
+          },
+          "grade": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grade",
+            "description": "Learner grade (6\u20139). Used by set_grade; also stored on set_current when lesson implies a grade.",
+            "examples": [
+              7
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "action"
+        ],
+        "title": "ProgressUpdateRequest"
+      },
+      "SearchHit": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "distance": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Distance"
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metadata"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "text",
+          "metadata"
+        ],
+        "title": "SearchHit"
+      },
+      "SearchRequest": {
+        "properties": {
+          "query": {
+            "type": "string",
+            "title": "Query",
+            "examples": [
+              "photosynthesis and sunlight"
+            ]
+          },
+          "topic_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Topic Id",
+            "description": "Filter metadata topic_id. Accepts Assessment IDs (G6_S3_WAT_RESOUR), sibling skills, legacy (g6_science_ch03), or lesson_id.",
+            "examples": [
+              "G6_S3_WAT_RESOUR",
+              "g6_science_ch03"
+            ]
+          },
+          "lesson_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lesson Id",
+            "description": "If set (and topic_id omitted), resolves topic_id from curriculum."
+          },
+          "top_k": {
+            "type": "integer",
+            "maximum": 20.0,
+            "minimum": 1.0,
+            "title": "Top K",
+            "default": 5
+          }
+        },
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "title": "SearchRequest",
+        "description": "Try retrieval without the LLM \u2014 proves Chroma + PDF ingest work."
+      },
+      "SearchResponse": {
+        "properties": {
+          "hits": {
+            "items": {
+              "$ref": "#/components/schemas/SearchHit"
+            },
+            "type": "array",
+            "title": "Hits"
+          }
+        },
+        "type": "object",
+        "required": [
+          "hits"
+        ],
+        "title": "SearchResponse"
+      },
+      "TeacherARUpsertRequest": {
+        "properties": {
+          "model_url": {
+            "type": "string",
+            "title": "Model Url",
+            "description": "HTTPS URL to a .glb / .gltf model"
+          },
+          "caption": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Caption"
+          },
+          "poster_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Poster Url"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "grade": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grade"
+          }
+        },
+        "type": "object",
+        "required": [
+          "model_url"
+        ],
+        "title": "TeacherARUpsertRequest"
+      },
+      "TeacherGenerateRequest": {
+        "properties": {
+          "lesson_id": {
+            "type": "string",
+            "title": "Lesson Id",
+            "examples": [
+              "g7_sci_01"
+            ]
+          },
+          "profile": {
+            "type": "string",
+            "title": "Profile",
+            "examples": [
+              "weak"
+            ]
+          },
+          "event": {
+            "type": "string",
+            "title": "Event",
+            "default": "lesson_start"
+          },
+          "teacher_id": {
+            "type": "string",
+            "title": "Teacher Id",
+            "default": "teacher-1"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lesson_id",
+          "profile"
+        ],
+        "title": "TeacherGenerateRequest"
+      },
+      "TeacherLessonMediaRequest": {
+        "properties": {
+          "youtube_url": {
+            "type": "string",
+            "title": "Youtube Url",
+            "description": "YouTube watch or share URL",
+            "default": ""
+          },
+          "teacher_id": {
+            "type": "string",
+            "title": "Teacher Id",
+            "default": "teacher-1"
+          }
+        },
+        "type": "object",
+        "title": "TeacherLessonMediaRequest"
+      },
+      "TeacherLessonVideosRequest": {
+        "properties": {
+          "videos": {
+            "items": {
+              "$ref": "#/components/schemas/LessonVideoItem"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Videos",
+            "description": "Ordered video library for this chapter."
+          },
+          "teacher_id": {
+            "type": "string",
+            "title": "Teacher Id",
+            "default": "teacher-1"
+          }
+        },
+        "type": "object",
+        "title": "TeacherLessonVideosRequest"
+      },
+      "TeacherPublishRequest": {
+        "properties": {
+          "lesson_id": {
+            "type": "string",
+            "title": "Lesson Id"
+          },
+          "profile": {
+            "type": "string",
+            "title": "Profile"
+          },
+          "event": {
+            "type": "string",
+            "title": "Event",
+            "default": "lesson_start"
+          },
+          "lesson_text": {
+            "type": "string",
+            "title": "Lesson Text"
+          },
+          "topic_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Topic Id"
+          },
+          "minion_state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minion State",
+            "default": "idle"
+          },
+          "presentation_mode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Presentation Mode"
+          },
+          "chunk_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Chunk Ids"
+          },
+          "teacher_id": {
+            "type": "string",
+            "title": "Teacher Id",
+            "default": "teacher-1"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lesson_id",
+          "profile",
+          "lesson_text"
+        ],
+        "title": "TeacherPublishRequest",
+        "description": "Approve generated (or edited) text into the permanent library."
+      },
+      "TeacherUpdateRequest": {
+        "properties": {
+          "lesson_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lesson Text"
+          },
+          "lesson_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lesson Title"
+          },
+          "minion_state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minion State"
+          },
+          "presentation_mode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Presentation Mode"
+          },
+          "teacher_id": {
+            "type": "string",
+            "title": "Teacher Id",
+            "default": "teacher-1"
+          }
+        },
+        "type": "object",
+        "title": "TeacherUpdateRequest"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "health",
+      "description": "Service health."
+    },
+    {
+      "name": "student-lessons",
+      "description": "Student learning path: **current lesson** identity (lesson_id, grade, chapter_number), load published lesson text, resume progress, chapter media & AR."
+    },
+    {
+      "name": "progress",
+      "description": "Learner progress along the ordered curriculum path."
+    },
+    {
+      "name": "curriculum",
+      "description": "Ordered chapters by grade; resolve Assessment / skill / legacy IDs."
+    },
+    {
+      "name": "analytics",
+      "description": "Learner profile (weak | average | strong) and legacy mastery score."
+    },
+    {
+      "name": "teacher-library",
+      "description": "Generate, publish, and edit chapter content per knowledge level."
+    },
+    {
+      "name": "teacher-media",
+      "description": "YouTube + summary infographic per chapter."
+    },
+    {
+      "name": "ar",
+      "description": "Chapter / topic AR packs for students and teachers."
+    },
+    {
+      "name": "admin-debug",
+      "description": "Dev/admin helpers (Chroma stats, topic-id migration)."
+    }
+  ]
+}

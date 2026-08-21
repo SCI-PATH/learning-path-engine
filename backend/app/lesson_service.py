@@ -6,75 +6,39 @@ Providers (OpenAI-compatible `chat.completions`):
   **Groq** (preferred if set): https://console.groq.com/
     GROQ_API_KEY
     GROQ_BASE_URL   — default https://api.groq.com/openai/v1
-    GROQ_MODEL      — default llama-3.3-70b-versatile (see Groq console for current ids)
+    GROQ_MODEL      — default openai/gpt-oss-120b (see Groq console for current ids)
 
   **xAI Grok** (if GROQ_API_KEY is unset and xAI key is set):
     XAI_API_KEY or GROK_API_KEY
     XAI_BASE_URL    — default https://api.x.ai/v1
     XAI_MODEL       — default grok-4-1-fast-non-reasoning
+
+Prompt contracts live in app.prompts (Phase A prompt engineering).
 """
 
 from __future__ import annotations
 
 import logging
 import os
-import re
 import time
-from typing import Literal
 
 from app.chroma_setup import COLLECTION_NAME, get_chroma_client
-from app.curriculum import load_curriculum
-
-Profile = Literal["weak", "average", "strong"]
+from app.content_filters import is_non_lesson_chunk, scrub_chunk_for_lesson
+from app.topic_ids import chroma_theory_where, resolve_chroma_topic_id, resolve_lesson
+from app.prompts import (
+    PROFILE_MAX_TOKENS,
+    PROFILE_TEMPERATURE,
+    build_enrichment_retrieval_query,
+    build_retrieval_query,
+    build_system_message,
+    build_user_message,
+    normalize_event,
+    normalize_profile,
+    presentation_mode_for_profile,
+    retrieval_top_k,
+)
 
 log = logging.getLogger(__name__)
-
-
-def _normalize_profile(raw: str) -> Profile:
-    v = (raw or "average").strip().lower()
-    if v in ("weak", "struggling", "beginner", "low"):
-        return "weak"
-    if v in ("strong", "advanced", "high"):
-        return "strong"
-    return "average"
-
-
-def _profile_system_instructions(profile: Profile, event: str | None) -> str:
-    """Pedagogy knobs — maps to your 'dynamic content / scaffolding' story."""
-    base = (
-        "You are a Grade 6 science tutor in Sri Lanka. Be accurate, encouraging, and concise. "
-        "Use simple English suitable for 11–12 year olds when appropriate."
-    )
-    if profile == "weak":
-        style = (
-            "The learner needs EXTRA support: very short sentences, step-by-step, "
-            "one idea at a time, at least one everyday analogy, and optional a tiny recap bullet list. "
-            "Avoid jargon unless you define it in plain words."
-        )
-    elif profile == "strong":
-        style = (
-            "The learner is comfortable: you may be a bit denser, use correct scientific terms, "
-            "connect ideas more quickly, and skip hand-holding — but stay clear."
-        )
-    else:
-        style = (
-            "The learner is typical: balance clarity with a normal level of detail; "
-            "define new terms once; one short example is enough."
-        )
-
-    evt = (event or "lesson_start").lower()
-    if evt in ("wrong_answer", "game_failed_return"):
-        style += (
-            " They returned after failing a quiz/game item: give extra support with a gentle nudge, "
-            "one misconception fix, and a tiny confidence-building recap from CONTEXT only."
-        )
-    elif evt in ("lesson_complete", "quiz_passed", "wrap_up_success"):
-        style += (
-            " This is a wrap-up after correct answers: briefly reinforce key points and end with "
-            "a motivating bridge to the next lesson."
-        )
-
-    return f"{base}\n\n{style}"
 
 
 def _minion_state_for_event(event: str | None) -> str:
@@ -86,25 +50,26 @@ def _minion_state_for_event(event: str | None) -> str:
     return "teaching"
 
 
-def _build_theory_where(topic_id: str | None) -> dict:
-    if topic_id:
-        return {"$and": [{"topic_id": topic_id}, {"content_type": "theory"}]}
-    return {"content_type": "theory"}
-
-
 def retrieve_chunks(
     *,
     topic_id: str,
     query_hint: str,
     top_k: int = 6,
 ) -> tuple[list[str], list[str]]:
-    """Return (documents, ids) from Chroma."""
+    """
+    Return (documents, ids) from Chroma — lesson/theory text only.
+    Over-fetches then drops activity/question chunks and scrubs leftovers.
+
+    topic_id may be Assessment-style (G7_S1_PLA_DIVER), a sibling skill ID,
+    legacy (g7_science_ch01), or lesson_id — all resolve to the Chroma primary.
+    """
+    fetch_k = min(max(top_k * 3, top_k + 6), 24)
     kwargs: dict = {
         "query_texts": [query_hint],
-        "n_results": top_k,
+        "n_results": fetch_k,
         "include": ["documents", "metadatas", "distances"],
     }
-    kwargs["where"] = _build_theory_where(topic_id if topic_id else None)
+    kwargs["where"] = chroma_theory_where(topic_id if topic_id else None)
     raw = _query_with_recovery(kwargs)
     ids = (raw.get("ids") or [[]])[0]
     docs = (raw.get("documents") or [[]])[0]
@@ -112,10 +77,45 @@ def retrieve_chunks(
     out_docs: list[str] = []
     for i, cid in enumerate(ids):
         text = docs[i] if i < len(docs) else ""
-        if text and cid:
-            out_ids.append(str(cid))
-            out_docs.append(_normalize_chunk_for_llm(str(text)))
+        if not text or not cid:
+            continue
+        if is_non_lesson_chunk(str(text)):
+            continue
+        cleaned = scrub_chunk_for_lesson(str(text))
+        if len(cleaned) < 120:
+            continue
+        if is_non_lesson_chunk(cleaned):
+            continue
+        out_ids.append(str(cid))
+        out_docs.append(cleaned)
+        if len(out_docs) >= top_k:
+            break
     return out_docs, out_ids
+
+
+def _merge_chunk_results(
+    primary_docs: list[str],
+    primary_ids: list[str],
+    extra_docs: list[str],
+    extra_ids: list[str],
+    *,
+    cap: int,
+) -> tuple[list[str], list[str]]:
+    """Append enrichment hits without duplicate chunk ids."""
+    seen = set(primary_ids)
+    docs = list(primary_docs)
+    ids = list(primary_ids)
+    for cid, doc in zip(extra_ids, extra_docs):
+        if cid in seen or not doc:
+            continue
+        if is_non_lesson_chunk(doc):
+            continue
+        seen.add(cid)
+        docs.append(doc)
+        ids.append(cid)
+        if len(docs) >= cap:
+            break
+    return docs, ids
 
 
 def _query_with_recovery(kwargs: dict) -> dict:
@@ -133,34 +133,6 @@ def _query_with_recovery(kwargs: dict) -> dict:
         return col.query(**kwargs)
 
 
-def _normalize_chunk_for_llm(text: str) -> str:
-    """
-    Final light cleanup so textbook noise (captions/headers) is less likely to leak.
-    """
-    t = text.strip()
-    t = re.sub(r"\bFig\.?\s*\d+(?:\.\d+)?\b.*?(?=\s[A-Z]|$)", "", t, flags=re.I)
-    t = re.sub(r"\bScience\s*\|[A-Za-z\s]+\b", "", t, flags=re.I)
-    t = re.sub(r"\s{2,}", " ", t).strip()
-    return t
-
-
-def build_retrieval_query(
-    topic_id: str,
-    profile: str,
-    event: str | None,
-    *,
-    lesson_title: str | None = None,
-) -> str:
-    """Turn API fields into a single semantic query for embedding search."""
-    tid = topic_id.replace("_", " ")
-    focus = f" Lesson focus: {lesson_title}." if lesson_title else ""
-    return (
-        f"Grade 6 science textbook material about: {tid}.{focus} "
-        f"Learner support level: {profile}. "
-        f"Situation: {event or 'lesson_start'}."
-    )
-
-
 def _llm_client_and_model() -> tuple[object, str]:
     """Return (OpenAI client, model_id). Groq takes priority if GROQ_API_KEY is set."""
     try:
@@ -171,7 +143,7 @@ def _llm_client_and_model() -> tuple[object, str]:
     groq_key = os.getenv("GROQ_API_KEY")
     if groq_key:
         base = os.getenv("GROQ_BASE_URL", "https://api.groq.com/openai/v1").rstrip("/")
-        model = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+        model = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
         return OpenAI(api_key=groq_key, base_url=base), model
 
     xai_key = os.getenv("XAI_API_KEY") or os.getenv("GROK_API_KEY")
@@ -193,30 +165,25 @@ def generate_lesson_text(
     topic_id: str,
     profile: str,
     event: str | None,
+    lesson_title: str | None = None,
 ) -> str:
     """Call Groq or xAI via OpenAI-compatible chat completions."""
     client, model = _llm_client_and_model()
 
-    prof = _normalize_profile(profile)
-    system = _profile_system_instructions(prof, event)
-
-    joined = "\n\n---\n\n".join(
-        f"[PASSAGE {i + 1}]\n{chunk}" for i, chunk in enumerate(context_chunks)
-    )
-    user = (
-        f"TOPIC_ID: {topic_id}\n"
-        f"Use ONLY the passages below as your source of facts. "
-        f"If something is not in the passages, say you do not have that information in the textbook excerpt.\n\n"
-        f"PASSAGES:\n{joined}\n\n"
-        f"TASK: Write one cohesive lesson segment (not a list of quiz questions) that teaches the ideas relevant "
-        f"to this topic for this learner. Start with a short title line, then 2–6 short paragraphs (or bullets only "
-        f"if the learner is weak and you already said you'd use bullets). No filler about being an AI."
+    prof = normalize_profile(profile)
+    system = build_system_message(profile=profile, event=event)
+    user = build_user_message(
+        topic_id=topic_id,
+        lesson_title=lesson_title,
+        passages=context_chunks,
+        profile=profile,
+        event=event,
     )
 
     resp = client.chat.completions.create(
         model=model,
-        temperature=0.35,
-        max_tokens=1800,
+        temperature=PROFILE_TEMPERATURE[prof],
+        max_tokens=PROFILE_MAX_TOKENS[prof],
         messages=[
             {"role": "system", "content": system},
             {"role": "user", "content": user},
@@ -234,7 +201,7 @@ def build_lesson(
     profile: str,
     event: str | None,
     lesson_id: str | None = None,
-    top_k: int = 6,
+    top_k: int | None = None,
 ) -> tuple[str, str, list[str], str, str | None]:
     """
     Full pipeline: retrieve → generate →
@@ -246,8 +213,7 @@ def build_lesson(
     lesson_title: str | None = None
     resolved_lesson: str | None = None
     if lesson_id and lesson_id.strip():
-        cur = load_curriculum()
-        entry = cur.by_lesson_id(lesson_id)
+        entry = resolve_lesson(lesson_id)
         if not entry:
             raise RuntimeError(
                 f"Unknown lesson_id: {lesson_id!r}. See GET /curriculum for valid ids."
@@ -256,25 +222,51 @@ def build_lesson(
         lesson_title = entry.title
         resolved_lesson = entry.lesson_id
     else:
-        effective_topic = topic_id
+        mapped = resolve_lesson(topic_id)
+        if mapped:
+            effective_topic = mapped.topic_id
+            lesson_title = mapped.title
+            resolved_lesson = mapped.lesson_id
+        else:
+            effective_topic = resolve_chroma_topic_id(topic_id)
+
+    prof = normalize_profile(profile)
+    k = top_k if top_k is not None else retrieval_top_k(profile)
 
     q = build_retrieval_query(
-        effective_topic, profile, event, lesson_title=lesson_title
+        topic_id=effective_topic,
+        lesson_title=lesson_title,
+        event=event,
     )
     t_chroma = time.perf_counter()
-    docs, ids = retrieve_chunks(topic_id=effective_topic, query_hint=q, top_k=top_k)
+    docs, ids = retrieve_chunks(topic_id=effective_topic, query_hint=q, top_k=k)
+
+    # Strong learners: second retrieval pass for enrichment context (still chapter-scoped).
+    if prof == "strong" and lesson_title and normalize_event(event) == "lesson_start":
+        eq = build_enrichment_retrieval_query(
+            topic_id=effective_topic,
+            lesson_title=lesson_title,
+        )
+        extra_docs, extra_ids = retrieve_chunks(
+            topic_id=effective_topic,
+            query_hint=eq,
+            top_k=6,
+        )
+        docs, ids = _merge_chunk_results(docs, ids, extra_docs, extra_ids, cap=k + 6)
+
     log.info(
         "chroma query topic=%r lesson_id=%r top_k=%s hits=%s %.3fs",
         effective_topic,
         resolved_lesson,
-        top_k,
+        k,
         len(docs),
         time.perf_counter() - t_chroma,
     )
     if not docs:
         raise RuntimeError(
-            "No chunks retrieved. For chapter ingest use topic_id like g6_science_ch01 or pass "
-            "lesson_id after re-running: python scripts/ingest.py"
+            "No chunks retrieved. For chapter ingest use Assessment Topic IDs "
+            "(e.g. G7_S1_PLA_DIVER) or pass lesson_id from GET /curriculum. "
+            "Re-run: python scripts/ingest.py"
         )
     t_llm = time.perf_counter()
     text = generate_lesson_text(
@@ -283,13 +275,14 @@ def build_lesson(
         topic_id=effective_topic,
         profile=profile,
         event=event,
+        lesson_title=lesson_title,
     )
     log.info(
         "llm complete topic=%r profile=%r event=%r out_chars=%s %.3fs",
         effective_topic,
-        _normalize_profile(profile),
+        prof,
         (event or "lesson_start").lower(),
         len(text or ""),
         time.perf_counter() - t_llm,
     )
-    return text, _minion_state_for_event(event), ids, effective_topic, resolved_lesson
+    return text, _minion_state_for_event(event), ids, effective_topic, resolved_lesson, prof, presentation_mode_for_profile(prof)

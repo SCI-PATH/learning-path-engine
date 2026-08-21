@@ -1,0 +1,1432 @@
+{
+  "source": "Skill-Heirarchies-G6-G9.xlsx",
+  "description": "Excel is the naming reference (G#_S#_DOMAIN_FOCUS). Curriculum topic_ids follow that pattern for every chapter so Chroma / Assessment / Analytics stay consistent.",
+  "skills": [
+    {
+      "topic_id": "G6_S1_ORG_CHARS",
+      "section_id": "G6_S1",
+      "grade": 6,
+      "core_concept": "Living Organisms",
+      "curriculum_reference": "Characteristics of Organisms (Growth, Nutrition, etc.)"
+    },
+    {
+      "topic_id": "G6_S1_ORG_CLASS",
+      "section_id": "G6_S1",
+      "grade": 6,
+      "core_concept": "Living Organisms",
+      "curriculum_reference": "Classification (Plants, Animals, Micro-organisms)"
+    },
+    {
+      "topic_id": "G6_S2_MAT_STATES",
+      "section_id": "G6_S2",
+      "grade": 6,
+      "core_concept": "Matter & States",
+      "curriculum_reference": "States of Matter (Solid, Liquid, Gas)"
+    },
+    {
+      "topic_id": "G6_S2_MAT_PROPS",
+      "section_id": "G6_S2",
+      "grade": 6,
+      "core_concept": "Matter & States",
+      "curriculum_reference": "Specific Properties of Solid Matter (Hardness, Malleability, etc.)"
+    },
+    {
+      "topic_id": "G6_S4_ENE_SOURCES",
+      "section_id": "G6_S4",
+      "grade": 6,
+      "core_concept": "Energy",
+      "curriculum_reference": "Energy Sources and Their Applications"
+    },
+    {
+      "topic_id": "G6_S8_ELE_CIRCUITS",
+      "section_id": "G6_S8",
+      "grade": 6,
+      "core_concept": "Electricity",
+      "curriculum_reference": "Preparation of Circuits & Symbols"
+    },
+    {
+      "topic_id": "G6_S8_ELE_CONDINS",
+      "section_id": "G6_S8",
+      "grade": 6,
+      "core_concept": "Electricity",
+      "curriculum_reference": "Conductors and Insulators"
+    },
+    {
+      "topic_id": "G7_S1_PLA_DIVER",
+      "section_id": "G7_S1",
+      "grade": 7,
+      "core_concept": "Living Organisms",
+      "curriculum_reference": "Morphological features of plants"
+    },
+    {
+      "topic_id": "G7_S1_PLA_CLASSIF",
+      "section_id": "G7_S1",
+      "grade": 7,
+      "core_concept": "Living Organisms",
+      "curriculum_reference": "Plant classification (Monocots vs. Dicots)"
+    },
+    {
+      "topic_id": "G7_S2_STA_CHARGES",
+      "section_id": "G7_S2",
+      "grade": 7,
+      "core_concept": "Electricity",
+      "curriculum_reference": "Charging objects and static electric charges"
+    },
+    {
+      "topic_id": "G7_S2_STA_CAPACIT",
+      "section_id": "G7_S2",
+      "grade": 7,
+      "core_concept": "Electricity",
+      "curriculum_reference": "Capacitors and static electricity applications"
+    },
+    {
+      "topic_id": "G7_S3_ELE_SOURCES",
+      "section_id": "G7_S3",
+      "grade": 7,
+      "core_concept": "Electricity",
+      "curriculum_reference": "Sources of electricity generation"
+    },
+    {
+      "topic_id": "G7_S3_ELE_CURRENTS",
+      "section_id": "G7_S3",
+      "grade": 7,
+      "core_concept": "Electricity",
+      "curriculum_reference": "Electric currents (DC vs. AC)"
+    },
+    {
+      "topic_id": "G7_S4_WAT_SOLVENT",
+      "section_id": "G7_S4",
+      "grade": 7,
+      "core_concept": "Matter & States",
+      "curriculum_reference": "Water as a universal solvent and medium of life"
+    },
+    {
+      "topic_id": "G7_S4_WAT_COOLANT",
+      "section_id": "G7_S4",
+      "grade": 7,
+      "core_concept": "Matter & States",
+      "curriculum_reference": "Water as a coolant and its thermal properties"
+    },
+    {
+      "topic_id": "G7_S5_ACI_IDENTIF",
+      "section_id": "G7_S5",
+      "grade": 7,
+      "core_concept": "Matter & States",
+      "curriculum_reference": "Identification of acids and bases (Lab vs. Home usage)"
+    },
+    {
+      "topic_id": "G7_S5_ACI_INDICAT",
+      "section_id": "G7_S5",
+      "grade": 7,
+      "core_concept": "Matter & States",
+      "curriculum_reference": "pH indicators and neutralization"
+    },
+    {
+      "topic_id": "G7_S6_ANI_CLASSIF",
+      "section_id": "G7_S6",
+      "grade": 7,
+      "core_concept": "Living Organisms",
+      "curriculum_reference": "Vertebrates vs. Invertebrates and dichotomous keys"
+    },
+    {
+      "topic_id": "G7_S6_ANI_ADAPTAT",
+      "section_id": "G7_S6",
+      "grade": 7,
+      "core_concept": "Living Organisms",
+      "curriculum_reference": "Animal adaptations to environments"
+    },
+    {
+      "topic_id": "G7_S7_ENE_FORMS",
+      "section_id": "G7_S7",
+      "grade": 7,
+      "core_concept": "Energy",
+      "curriculum_reference": "Forms of energy (Kinetic, Potential, Thermal, Chemical)"
+    },
+    {
+      "topic_id": "G7_S7_ENE_TRANSF",
+      "section_id": "G7_S7",
+      "grade": 7,
+      "core_concept": "Energy",
+      "curriculum_reference": "Energy transformation and uses"
+    },
+    {
+      "topic_id": "G7_S8_EAR_STRUCT",
+      "section_id": "G7_S8",
+      "grade": 7,
+      "core_concept": "Earth & Space",
+      "curriculum_reference": "Earth's internal structure and layers"
+    },
+    {
+      "topic_id": "G7_S8_EAR_TECTON",
+      "section_id": "G7_S8",
+      "grade": 7,
+      "core_concept": "Earth & Space",
+      "curriculum_reference": "Tectonic plates and plate movements"
+    },
+    {
+      "topic_id": "G7_S9_LIG_SHADOWS",
+      "section_id": "G7_S9",
+      "grade": 7,
+      "core_concept": "Energy",
+      "curriculum_reference": "Formation of shadows (Umbra and Penumbra)"
+    },
+    {
+      "topic_id": "G7_S9_LIG_MIRRORS",
+      "section_id": "G7_S9",
+      "grade": 7,
+      "core_concept": "Energy",
+      "curriculum_reference": "Light reflection on plane and curved mirrors"
+    },
+    {
+      "topic_id": "G7_S10_MIC_LIGHT",
+      "section_id": "G7_S10",
+      "grade": 7,
+      "core_concept": "Living Organisms",
+      "curriculum_reference": "Compound light microscope structure and magnification"
+    },
+    {
+      "topic_id": "G7_S10_MIC_ELECTR",
+      "section_id": "G7_S10",
+      "grade": 7,
+      "core_concept": "Living Organisms",
+      "curriculum_reference": "Resolution and characteristics of electron microscopes"
+    },
+    {
+      "topic_id": "G8_S1_BIO_DIVER",
+      "section_id": "G8_S1",
+      "grade": 8,
+      "core_concept": "Living Organisms",
+      "curriculum_reference": "Diversity of microorganisms, plants, and animals"
+    },
+    {
+      "topic_id": "G8_S1_BIO_CLASSIF",
+      "section_id": "G8_S1",
+      "grade": 8,
+      "core_concept": "Living Organisms",
+      "curriculum_reference": "Classification frameworks and binomial nomenclature"
+    },
+    {
+      "topic_id": "G8_S2_TIS_PLANT",
+      "section_id": "G8_S2",
+      "grade": 8,
+      "core_concept": "Living Organisms",
+      "curriculum_reference": "Plant tissues (Meristematic and Permanent tissues)"
+    },
+    {
+      "topic_id": "G8_S2_TIS_ANIMAL",
+      "section_id": "G8_S2",
+      "grade": 8,
+      "core_concept": "Living Organisms",
+      "curriculum_reference": "Animal tissues (Epithelial, Connective, Muscular, Nervous)"
+    },
+    {
+      "topic_id": "G8_S3_PHO_PROCESS",
+      "section_id": "G8_S3",
+      "grade": 8,
+      "core_concept": "Living Organisms",
+      "curriculum_reference": "Mechanism, word equation, and raw materials of photosynthesis"
+    },
+    {
+      "topic_id": "G8_S3_PHO_IMPORT",
+      "section_id": "G8_S3",
+      "grade": 8,
+      "core_concept": "Living Organisms",
+      "curriculum_reference": "Importance of photosynthesis to ecosystems and food chains"
+    },
+    {
+      "topic_id": "G8_S4_MAT_ELEMENTS",
+      "section_id": "G8_S4",
+      "grade": 8,
+      "core_concept": "Matter & States",
+      "curriculum_reference": "Characteristics of elements and chemical symbols"
+    },
+    {
+      "topic_id": "G8_S4_MAT_COMPOUNDS",
+      "section_id": "G8_S4",
+      "grade": 8,
+      "core_concept": "Matter & States",
+      "curriculum_reference": "Formation of compounds and properties of common chemical mixtures"
+    },
+    {
+      "topic_id": "G8_S5_MAT_DENSITY",
+      "section_id": "G8_S5",
+      "grade": 8,
+      "core_concept": "Matter & States",
+      "curriculum_reference": "Density principles, measurement methods, and calculations"
+    },
+    {
+      "topic_id": "G8_S5_MAT_THERMAL",
+      "section_id": "G8_S5",
+      "grade": 8,
+      "core_concept": "Matter & States",
+      "curriculum_reference": "Thermal and electrical conductivity properties of matter"
+    },
+    {
+      "topic_id": "G8_S6_CHA_PHYSICAL",
+      "section_id": "G8_S6",
+      "grade": 8,
+      "core_concept": "Matter & States",
+      "curriculum_reference": "Physical vs. chemical changes in everyday matter"
+    },
+    {
+      "topic_id": "G8_S6_CHA_BURNING",
+      "section_id": "G8_S6",
+      "grade": 8,
+      "core_concept": "Matter & States",
+      "curriculum_reference": "Combustion conditions, ignition temperature, and Bunsen burner use"
+    },
+    {
+      "topic_id": "G8_S7_FOR_TYPES",
+      "section_id": "G8_S7",
+      "grade": 8,
+      "core_concept": "Force & Motion",
+      "curriculum_reference": "Contact and non-contact forces (Gravitational, Magnetic, Friction)"
+    },
+    {
+      "topic_id": "G8_S7_FOR_PRESSURE",
+      "section_id": "G8_S7",
+      "grade": 8,
+      "core_concept": "Force & Motion",
+      "curriculum_reference": "Calculation of pressure and its industrial/everyday applications"
+    },
+    {
+      "topic_id": "G8_S8_STA_PHENOM",
+      "section_id": "G8_S8",
+      "grade": 8,
+      "core_concept": "Electricity",
+      "curriculum_reference": "Electrostatic attraction and repulsion phenomena"
+    },
+    {
+      "topic_id": "G8_S8_STA_LIGHTNG",
+      "section_id": "G8_S8",
+      "grade": 8,
+      "core_concept": "Electricity",
+      "curriculum_reference": "Thunderstorm hazards, static discharge, and lightning protection"
+    },
+    {
+      "topic_id": "G9_S1_SYS_DIGEST",
+      "section_id": "G9_S1",
+      "grade": 9,
+      "core_concept": "Living Organisms",
+      "curriculum_reference": "Human digestive system structures, pathways, and digestion enzymes"
+    },
+    {
+      "topic_id": "G9_S1_SYS_CIRCUL",
+      "section_id": "G9_S1",
+      "grade": 9,
+      "core_concept": "Living Organisms",
+      "curriculum_reference": "Circulatory, respiratory, and excretory system coordination"
+    },
+    {
+      "topic_id": "G9_S2_RHY_EARTH",
+      "section_id": "G9_S2",
+      "grade": 9,
+      "core_concept": "Earth & Space",
+      "curriculum_reference": "Rhythmic natural cycles driven by Earth's rotation and revolution"
+    },
+    {
+      "topic_id": "G9_S2_RHY_CLIMATE",
+      "section_id": "G9_S2",
+      "grade": 9,
+      "core_concept": "Earth & Space",
+      "curriculum_reference": "Impact of rhythmic phenomena on ecosystems and climate patterns"
+    },
+    {
+      "topic_id": "G9_S3_LIG_REFRAC",
+      "section_id": "G9_S3",
+      "grade": 9,
+      "core_concept": "Energy",
+      "curriculum_reference": "Refraction of light, critical angle, and total internal reflection"
+    },
+    {
+      "topic_id": "G9_S3_LIG_LENSES",
+      "section_id": "G9_S3",
+      "grade": 9,
+      "core_concept": "Energy",
+      "curriculum_reference": "Real and virtual image formation using convex and concave lenses"
+    },
+    {
+      "topic_id": "G9_S4_SOU_PROPAG",
+      "section_id": "G9_S4",
+      "grade": 9,
+      "core_concept": "Energy",
+      "curriculum_reference": "Sound production parameters (frequency, amplitude) and medium propagation"
+    },
+    {
+      "topic_id": "G9_S4_SOU_HEARING",
+      "section_id": "G9_S4",
+      "grade": 9,
+      "core_concept": "Energy",
+      "curriculum_reference": "Human ear anatomy, auditory thresholds, and acoustic limitations"
+    },
+    {
+      "topic_id": "G9_S5_HEA_EXPANS",
+      "section_id": "G9_S5",
+      "grade": 9,
+      "core_concept": "Energy",
+      "curriculum_reference": "Thermal expansion behaviors of solids, liquids, and gases"
+    },
+    {
+      "topic_id": "G9_S5_HEA_TRANSF",
+      "section_id": "G9_S5",
+      "grade": 9,
+      "core_concept": "Energy",
+      "curriculum_reference": "Thermal physics: conduction, convection, and radiation dynamics"
+    },
+    {
+      "topic_id": "G9_S6_NAT_ATOMS",
+      "section_id": "G9_S6",
+      "grade": 9,
+      "core_concept": "Matter & States",
+      "curriculum_reference": "History of atomic models, subatomic particles, and atomic number"
+    },
+    {
+      "topic_id": "G9_S6_NAT_CONFIG",
+      "section_id": "G9_S6",
+      "grade": 9,
+      "core_concept": "Matter & States",
+      "curriculum_reference": "Electronic configuration architectures and Periodic Table grouping"
+    },
+    {
+      "topic_id": "G9_S7_ACI_SALTS",
+      "section_id": "G9_S7",
+      "grade": 9,
+      "core_concept": "Matter & States",
+      "curriculum_reference": "Chemical properties of acids and bases, indicators, and salt prep"
+    },
+    {
+      "topic_id": "G9_S7_ACI_NEUTRAL",
+      "section_id": "G9_S7",
+      "grade": 9,
+      "core_concept": "Matter & States",
+      "curriculum_reference": "Industrial, agricultural, and biological applications of neutralization"
+    }
+  ],
+  "lesson_mappings": {
+    "g6_sci_01": {
+      "lesson_id": "g6_sci_01",
+      "title": "Wonders of the Living World",
+      "topic_id": "G6_S1_ORG_CHARS",
+      "legacy_topic_id": "g6_science_ch01",
+      "skill_topic_ids": [
+        "G6_S1_ORG_CHARS",
+        "G6_S1_ORG_CLASS"
+      ],
+      "skill_section_id": "G6_S1",
+      "grade": 6,
+      "from_excel_example": true
+    },
+    "g6_sci_02": {
+      "lesson_id": "g6_sci_02",
+      "title": "Things Around Us",
+      "topic_id": "G6_S2_MAT_STATES",
+      "legacy_topic_id": "g6_science_ch02",
+      "skill_topic_ids": [
+        "G6_S2_MAT_STATES",
+        "G6_S2_MAT_PROPS"
+      ],
+      "skill_section_id": "G6_S2",
+      "grade": 6,
+      "from_excel_example": true
+    },
+    "g6_sci_03": {
+      "lesson_id": "g6_sci_03",
+      "title": "Water as a Natural Resource",
+      "topic_id": "G6_S3_WAT_RESOUR",
+      "legacy_topic_id": "g6_science_ch03",
+      "skill_topic_ids": [
+        "G6_S3_WAT_RESOUR",
+        "G6_S3_WAT_CYCLE"
+      ],
+      "skill_section_id": "G6_S3",
+      "grade": 6,
+      "from_excel_example": false
+    },
+    "g6_sci_04": {
+      "lesson_id": "g6_sci_04",
+      "title": "Energy in Day to Day Life",
+      "topic_id": "G6_S4_ENE_SOURCES",
+      "legacy_topic_id": "g6_science_ch04",
+      "skill_topic_ids": [
+        "G6_S4_ENE_SOURCES"
+      ],
+      "skill_section_id": "G6_S4",
+      "grade": 6,
+      "from_excel_example": true
+    },
+    "g6_sci_05": {
+      "lesson_id": "g6_sci_05",
+      "title": "Light and Vision",
+      "topic_id": "G6_S5_LIG_VISION",
+      "legacy_topic_id": "g6_science_ch05",
+      "skill_topic_ids": [
+        "G6_S5_LIG_VISION",
+        "G6_S5_LIG_EYE"
+      ],
+      "skill_section_id": "G6_S5",
+      "grade": 6,
+      "from_excel_example": false
+    },
+    "g6_sci_06": {
+      "lesson_id": "g6_sci_06",
+      "title": "Sound and Hearing",
+      "topic_id": "G6_S6_SOU_HEARING",
+      "legacy_topic_id": "g6_science_ch06",
+      "skill_topic_ids": [
+        "G6_S6_SOU_HEARING",
+        "G6_S6_SOU_WAVES"
+      ],
+      "skill_section_id": "G6_S6",
+      "grade": 6,
+      "from_excel_example": false
+    },
+    "g6_sci_07": {
+      "lesson_id": "g6_sci_07",
+      "title": "Magnets",
+      "topic_id": "G6_S7_MAG_POLES",
+      "legacy_topic_id": "g6_science_ch07",
+      "skill_topic_ids": [
+        "G6_S7_MAG_POLES",
+        "G6_S7_MAG_FORCE"
+      ],
+      "skill_section_id": "G6_S7",
+      "grade": 6,
+      "from_excel_example": false
+    },
+    "g6_sci_08": {
+      "lesson_id": "g6_sci_08",
+      "title": "Electricity for a Comfortable Life",
+      "topic_id": "G6_S8_ELE_CIRCUITS",
+      "legacy_topic_id": "g6_science_ch08",
+      "skill_topic_ids": [
+        "G6_S8_ELE_CIRCUITS",
+        "G6_S8_ELE_CONDINS"
+      ],
+      "skill_section_id": "G6_S8",
+      "grade": 6,
+      "from_excel_example": true
+    },
+    "g6_sci_09": {
+      "lesson_id": "g6_sci_09",
+      "title": "Heat and Its Effects",
+      "topic_id": "G6_S9_HEA_EFFECTS",
+      "legacy_topic_id": "g6_science_ch09",
+      "skill_topic_ids": [
+        "G6_S9_HEA_EFFECTS",
+        "G6_S9_HEA_EXPAND"
+      ],
+      "skill_section_id": "G6_S9",
+      "grade": 6,
+      "from_excel_example": false
+    },
+    "g6_sci_10": {
+      "lesson_id": "g6_sci_10",
+      "title": "Food Related Interactions",
+      "topic_id": "G6_S10_FOO_INTERAC",
+      "legacy_topic_id": "g6_science_ch10",
+      "skill_topic_ids": [
+        "G6_S10_FOO_INTERAC",
+        "G6_S10_FOO_CHAINS"
+      ],
+      "skill_section_id": "G6_S10",
+      "grade": 6,
+      "from_excel_example": false
+    },
+    "g6_sci_11": {
+      "lesson_id": "g6_sci_11",
+      "title": "Weather and Climate",
+      "topic_id": "G6_S11_WEA_CLIMATE",
+      "legacy_topic_id": "g6_science_ch11",
+      "skill_topic_ids": [
+        "G6_S11_WEA_CLIMATE",
+        "G6_S11_WEA_PATTER"
+      ],
+      "skill_section_id": "G6_S11",
+      "grade": 6,
+      "from_excel_example": false
+    },
+    "g7_sci_01": {
+      "lesson_id": "g7_sci_01",
+      "title": "Plant Diversity",
+      "topic_id": "G7_S1_PLA_DIVER",
+      "legacy_topic_id": "g7_science_ch01",
+      "skill_topic_ids": [
+        "G7_S1_PLA_DIVER",
+        "G7_S1_PLA_CLASSIF"
+      ],
+      "skill_section_id": "G7_S1",
+      "grade": 7,
+      "from_excel_example": true
+    },
+    "g7_sci_02": {
+      "lesson_id": "g7_sci_02",
+      "title": "Static Electricity",
+      "topic_id": "G7_S2_STA_CHARGES",
+      "legacy_topic_id": "g7_science_ch02",
+      "skill_topic_ids": [
+        "G7_S2_STA_CHARGES",
+        "G7_S2_STA_CAPACIT"
+      ],
+      "skill_section_id": "G7_S2",
+      "grade": 7,
+      "from_excel_example": true
+    },
+    "g7_sci_03": {
+      "lesson_id": "g7_sci_03",
+      "title": "Generation of Electricity",
+      "topic_id": "G7_S3_ELE_SOURCES",
+      "legacy_topic_id": "g7_science_ch03",
+      "skill_topic_ids": [
+        "G7_S3_ELE_SOURCES",
+        "G7_S3_ELE_CURRENTS"
+      ],
+      "skill_section_id": "G7_S3",
+      "grade": 7,
+      "from_excel_example": true
+    },
+    "g7_sci_04": {
+      "lesson_id": "g7_sci_04",
+      "title": "Functions of Water",
+      "topic_id": "G7_S4_WAT_SOLVENT",
+      "legacy_topic_id": "g7_science_ch04",
+      "skill_topic_ids": [
+        "G7_S4_WAT_SOLVENT",
+        "G7_S4_WAT_COOLANT"
+      ],
+      "skill_section_id": "G7_S4",
+      "grade": 7,
+      "from_excel_example": true
+    },
+    "g7_sci_05": {
+      "lesson_id": "g7_sci_05",
+      "title": "Acids and Bases",
+      "topic_id": "G7_S5_ACI_IDENTIF",
+      "legacy_topic_id": "g7_science_ch05",
+      "skill_topic_ids": [
+        "G7_S5_ACI_IDENTIF",
+        "G7_S5_ACI_INDICAT"
+      ],
+      "skill_section_id": "G7_S5",
+      "grade": 7,
+      "from_excel_example": true
+    },
+    "g7_sci_06": {
+      "lesson_id": "g7_sci_06",
+      "title": "Animal Diversity",
+      "topic_id": "G7_S6_ANI_CLASSIF",
+      "legacy_topic_id": "g7_science_ch06",
+      "skill_topic_ids": [
+        "G7_S6_ANI_CLASSIF",
+        "G7_S6_ANI_ADAPTAT"
+      ],
+      "skill_section_id": "G7_S6",
+      "grade": 7,
+      "from_excel_example": true
+    },
+    "g7_sci_07": {
+      "lesson_id": "g7_sci_07",
+      "title": "Forms of Energy and Uses",
+      "topic_id": "G7_S7_ENE_FORMS",
+      "legacy_topic_id": "g7_science_ch07",
+      "skill_topic_ids": [
+        "G7_S7_ENE_FORMS",
+        "G7_S7_ENE_TRANSF"
+      ],
+      "skill_section_id": "G7_S7",
+      "grade": 7,
+      "from_excel_example": true
+    },
+    "g7_sci_08": {
+      "lesson_id": "g7_sci_08",
+      "title": "The Nature of the Earth",
+      "topic_id": "G7_S8_EAR_STRUCT",
+      "legacy_topic_id": "g7_science_ch08",
+      "skill_topic_ids": [
+        "G7_S8_EAR_STRUCT",
+        "G7_S8_EAR_TECTON"
+      ],
+      "skill_section_id": "G7_S8",
+      "grade": 7,
+      "from_excel_example": true
+    },
+    "g7_sci_09": {
+      "lesson_id": "g7_sci_09",
+      "title": "Light",
+      "topic_id": "G7_S9_LIG_SHADOWS",
+      "legacy_topic_id": "g7_science_ch09",
+      "skill_topic_ids": [
+        "G7_S9_LIG_SHADOWS",
+        "G7_S9_LIG_MIRRORS"
+      ],
+      "skill_section_id": "G7_S9",
+      "grade": 7,
+      "from_excel_example": true
+    },
+    "g7_sci_10": {
+      "lesson_id": "g7_sci_10",
+      "title": "The Correct Use of the Microscope",
+      "topic_id": "G7_S10_MIC_LIGHT",
+      "legacy_topic_id": "g7_science_ch10",
+      "skill_topic_ids": [
+        "G7_S10_MIC_LIGHT",
+        "G7_S10_MIC_ELECTR"
+      ],
+      "skill_section_id": "G7_S10",
+      "grade": 7,
+      "from_excel_example": true
+    },
+    "g7_sci_11": {
+      "lesson_id": "g7_sci_11",
+      "title": "Sound",
+      "topic_id": "G7_S11_SOU_PROPAG",
+      "legacy_topic_id": "g7_science_ch11",
+      "skill_topic_ids": [
+        "G7_S11_SOU_PROPAG",
+        "G7_S11_SOU_HEARING"
+      ],
+      "skill_section_id": "G7_S11",
+      "grade": 7,
+      "from_excel_example": false
+    },
+    "g7_sci_12": {
+      "lesson_id": "g7_sci_12",
+      "title": "Biological Processes",
+      "topic_id": "G7_S12_BIO_PROCESS",
+      "legacy_topic_id": "g7_science_ch12",
+      "skill_topic_ids": [
+        "G7_S12_BIO_PROCESS",
+        "G7_S12_BIO_CELLS"
+      ],
+      "skill_section_id": "G7_S12",
+      "grade": 7,
+      "from_excel_example": false
+    },
+    "g7_sci_13": {
+      "lesson_id": "g7_sci_13",
+      "title": "Atmosphere",
+      "topic_id": "G7_S13_ATM_LAYERS",
+      "legacy_topic_id": "g7_science_ch13",
+      "skill_topic_ids": [
+        "G7_S13_ATM_LAYERS",
+        "G7_S13_ATM_WEATHER"
+      ],
+      "skill_section_id": "G7_S13",
+      "grade": 7,
+      "from_excel_example": false
+    },
+    "g7_sci_14": {
+      "lesson_id": "g7_sci_14",
+      "title": "Heat and Temperature",
+      "topic_id": "G7_S14_HEA_TEMPER",
+      "legacy_topic_id": "g7_science_ch14",
+      "skill_topic_ids": [
+        "G7_S14_HEA_TEMPER",
+        "G7_S14_HEA_TRANSF"
+      ],
+      "skill_section_id": "G7_S14",
+      "grade": 7,
+      "from_excel_example": false
+    },
+    "g7_sci_15": {
+      "lesson_id": "g7_sci_15",
+      "title": "Soil",
+      "topic_id": "G7_S15_SOI_TYPES",
+      "legacy_topic_id": "g7_science_ch15",
+      "skill_topic_ids": [
+        "G7_S15_SOI_TYPES",
+        "G7_S15_SOI_PROPERT"
+      ],
+      "skill_section_id": "G7_S15",
+      "grade": 7,
+      "from_excel_example": false
+    },
+    "g7_sci_16": {
+      "lesson_id": "g7_sci_16",
+      "title": "Force and Motion",
+      "topic_id": "G7_S16_FOR_MOTION",
+      "legacy_topic_id": "g7_science_ch16",
+      "skill_topic_ids": [
+        "G7_S16_FOR_MOTION",
+        "G7_S16_FOR_TYPES"
+      ],
+      "skill_section_id": "G7_S16",
+      "grade": 7,
+      "from_excel_example": false
+    },
+    "g7_sci_17": {
+      "lesson_id": "g7_sci_17",
+      "title": "Nutrients in Food",
+      "topic_id": "G7_S17_FOO_NUTRIEN",
+      "legacy_topic_id": "g7_science_ch17",
+      "skill_topic_ids": [
+        "G7_S17_FOO_NUTRIEN",
+        "G7_S17_FOO_BALANC"
+      ],
+      "skill_section_id": "G7_S17",
+      "grade": 7,
+      "from_excel_example": false
+    },
+    "g7_sci_18": {
+      "lesson_id": "g7_sci_18",
+      "title": "Minerals and Rocks",
+      "topic_id": "G7_S18_MIN_ROCKS",
+      "legacy_topic_id": "g7_science_ch18",
+      "skill_topic_ids": [
+        "G7_S18_MIN_ROCKS",
+        "G7_S18_MIN_TYPES"
+      ],
+      "skill_section_id": "G7_S18",
+      "grade": 7,
+      "from_excel_example": false
+    },
+    "g7_sci_19": {
+      "lesson_id": "g7_sci_19",
+      "title": "Sources of Energy",
+      "topic_id": "G7_S19_ENE_SOURCES",
+      "legacy_topic_id": "g7_science_ch19",
+      "skill_topic_ids": [
+        "G7_S19_ENE_SOURCES",
+        "G7_S19_ENE_RENEW"
+      ],
+      "skill_section_id": "G7_S19",
+      "grade": 7,
+      "from_excel_example": false
+    },
+    "g8_sci_01": {
+      "lesson_id": "g8_sci_01",
+      "title": "Importance of Microorganisms",
+      "topic_id": "G8_S1_BIO_DIVER",
+      "legacy_topic_id": "g8_science_ch01",
+      "skill_topic_ids": [
+        "G8_S1_BIO_DIVER",
+        "G8_S1_MIC_IMPORT"
+      ],
+      "skill_section_id": "G8_S1",
+      "grade": 8,
+      "from_excel_example": true
+    },
+    "g8_sci_02": {
+      "lesson_id": "g8_sci_02",
+      "title": "Animal Classification",
+      "topic_id": "G8_S2_ANI_CLASSIF",
+      "legacy_topic_id": "g8_science_ch02",
+      "skill_topic_ids": [
+        "G8_S2_ANI_CLASSIF",
+        "G8_S2_ANI_KEYS"
+      ],
+      "skill_section_id": "G8_S2",
+      "grade": 8,
+      "from_excel_example": false
+    },
+    "g8_sci_03": {
+      "lesson_id": "g8_sci_03",
+      "title": "Diversity and Functions of Plant Parts",
+      "topic_id": "G8_S3_PLA_PARTS",
+      "legacy_topic_id": "g8_science_ch03",
+      "skill_topic_ids": [
+        "G8_S3_PLA_PARTS",
+        "G8_S3_PLA_FUNCT"
+      ],
+      "skill_section_id": "G8_S3",
+      "grade": 8,
+      "from_excel_example": false
+    },
+    "g8_sci_04": {
+      "lesson_id": "g8_sci_04",
+      "title": "Properties of Matter",
+      "topic_id": "G8_S4_MAT_ELEMENTS",
+      "legacy_topic_id": "g8_science_ch04",
+      "skill_topic_ids": [
+        "G8_S4_MAT_ELEMENTS",
+        "G8_S4_MAT_COMPOUNDS"
+      ],
+      "skill_section_id": "G8_S4",
+      "grade": 8,
+      "from_excel_example": true
+    },
+    "g8_sci_05": {
+      "lesson_id": "g8_sci_05",
+      "title": "Sound",
+      "topic_id": "G8_S5_SOU_WAVES",
+      "legacy_topic_id": "g8_science_ch05",
+      "skill_topic_ids": [
+        "G8_S5_SOU_WAVES",
+        "G8_S5_SOU_PROPAG"
+      ],
+      "skill_section_id": "G8_S5",
+      "grade": 8,
+      "from_excel_example": false
+    },
+    "g8_sci_06": {
+      "lesson_id": "g8_sci_06",
+      "title": "Magnets",
+      "topic_id": "G8_S6_MAG_FORCE",
+      "legacy_topic_id": "g8_science_ch06",
+      "skill_topic_ids": [
+        "G8_S6_MAG_FORCE",
+        "G8_S6_MAG_FIELD"
+      ],
+      "skill_section_id": "G8_S6",
+      "grade": 8,
+      "from_excel_example": false
+    },
+    "g8_sci_07": {
+      "lesson_id": "g8_sci_07",
+      "title": "Measurements Associated with Electricity",
+      "topic_id": "G8_S7_ELE_MEASURE",
+      "legacy_topic_id": "g8_science_ch07",
+      "skill_topic_ids": [
+        "G8_S7_ELE_MEASURE",
+        "G8_S7_ELE_UNITS"
+      ],
+      "skill_section_id": "G8_S7",
+      "grade": 8,
+      "from_excel_example": false
+    },
+    "g8_sci_08": {
+      "lesson_id": "g8_sci_08",
+      "title": "Changes in Matter",
+      "topic_id": "G8_S8_CHA_PHYSICAL",
+      "legacy_topic_id": "g8_science_ch08",
+      "skill_topic_ids": [
+        "G8_S8_CHA_PHYSICAL",
+        "G8_S8_CHA_BURNING"
+      ],
+      "skill_section_id": "G8_S8",
+      "grade": 8,
+      "from_excel_example": false
+    },
+    "g8_sci_09": {
+      "lesson_id": "g8_sci_09",
+      "title": "Human Organ Systems",
+      "topic_id": "G8_S9_SYS_HUMAN",
+      "legacy_topic_id": "g8_science_ch09",
+      "skill_topic_ids": [
+        "G8_S9_SYS_HUMAN",
+        "G8_S9_SYS_ORGANS"
+      ],
+      "skill_section_id": "G8_S9",
+      "grade": 8,
+      "from_excel_example": false
+    },
+    "g8_sci_10": {
+      "lesson_id": "g8_sci_10",
+      "title": "Electricity",
+      "topic_id": "G8_S10_ELE_CIRCUIT",
+      "legacy_topic_id": "g8_science_ch10",
+      "skill_topic_ids": [
+        "G8_S10_ELE_CIRCUIT",
+        "G8_S10_ELE_SAFETY"
+      ],
+      "skill_section_id": "G8_S10",
+      "grade": 8,
+      "from_excel_example": false
+    },
+    "g8_sci_11": {
+      "lesson_id": "g8_sci_11",
+      "title": "Main Biological Processes in Plants",
+      "topic_id": "G8_S11_PHO_PROCESS",
+      "legacy_topic_id": "g8_science_ch11",
+      "skill_topic_ids": [
+        "G8_S11_PHO_PROCESS",
+        "G8_S11_PHO_IMPORT"
+      ],
+      "skill_section_id": "G8_S11",
+      "grade": 8,
+      "from_excel_example": false
+    },
+    "g8_sci_12": {
+      "lesson_id": "g8_sci_12",
+      "title": "Life Cycles of Living Organisms",
+      "topic_id": "G8_S12_LIF_CYCLES",
+      "legacy_topic_id": "g8_science_ch12",
+      "skill_topic_ids": [
+        "G8_S12_LIF_CYCLES",
+        "G8_S12_LIF_STAGES"
+      ],
+      "skill_section_id": "G8_S12",
+      "grade": 8,
+      "from_excel_example": false
+    },
+    "g8_sci_13": {
+      "lesson_id": "g8_sci_13",
+      "title": "Food Preservation",
+      "topic_id": "G8_S13_FOO_PRESERV",
+      "legacy_topic_id": "g8_science_ch13",
+      "skill_topic_ids": [
+        "G8_S13_FOO_PRESERV",
+        "G8_S13_FOO_METHODS"
+      ],
+      "skill_section_id": "G8_S13",
+      "grade": 8,
+      "from_excel_example": false
+    },
+    "g8_sci_14": {
+      "lesson_id": "g8_sci_14",
+      "title": "Phenomena and Exploration of the Solar System",
+      "topic_id": "G8_S14_SOL_SYSTEM",
+      "legacy_topic_id": "g8_science_ch14",
+      "skill_topic_ids": [
+        "G8_S14_SOL_SYSTEM",
+        "G8_S14_SOL_EXPLORE"
+      ],
+      "skill_section_id": "G8_S14",
+      "grade": 8,
+      "from_excel_example": false
+    },
+    "g8_sci_15": {
+      "lesson_id": "g8_sci_15",
+      "title": "Natural Disasters",
+      "topic_id": "G8_S15_DIS_NATURAL",
+      "legacy_topic_id": "g8_science_ch15",
+      "skill_topic_ids": [
+        "G8_S15_DIS_NATURAL",
+        "G8_S15_DIS_SAFETY"
+      ],
+      "skill_section_id": "G8_S15",
+      "grade": 8,
+      "from_excel_example": false
+    },
+    "g9_sci_01": {
+      "lesson_id": "g9_sci_01",
+      "title": "Applications of Micro-organisms",
+      "topic_id": "G9_S1_MIC_APPLIC",
+      "legacy_topic_id": "g9_science_ch01",
+      "skill_topic_ids": [
+        "G9_S1_MIC_APPLIC",
+        "G9_S1_MIC_USES"
+      ],
+      "skill_section_id": "G9_S1",
+      "grade": 9,
+      "from_excel_example": false
+    },
+    "g9_sci_02": {
+      "lesson_id": "g9_sci_02",
+      "title": "Eye and Ear",
+      "topic_id": "G9_S2_SEN_EYE",
+      "legacy_topic_id": "g9_science_ch02",
+      "skill_topic_ids": [
+        "G9_S2_SEN_EYE",
+        "G9_S2_SEN_EAR"
+      ],
+      "skill_section_id": "G9_S2",
+      "grade": 9,
+      "from_excel_example": false
+    },
+    "g9_sci_03": {
+      "lesson_id": "g9_sci_03",
+      "title": "Nature and Properties of Matter",
+      "topic_id": "G9_S3_NAT_ATOMS",
+      "legacy_topic_id": "g9_science_ch03",
+      "skill_topic_ids": [
+        "G9_S3_NAT_ATOMS",
+        "G9_S3_NAT_CONFIG"
+      ],
+      "skill_section_id": "G9_S3",
+      "grade": 9,
+      "from_excel_example": false
+    },
+    "g9_sci_04": {
+      "lesson_id": "g9_sci_04",
+      "title": "Basic Concepts Associated with Force",
+      "topic_id": "G9_S4_FOR_BASIC",
+      "legacy_topic_id": "g9_science_ch04",
+      "skill_topic_ids": [
+        "G9_S4_FOR_BASIC",
+        "G9_S4_FOR_LAWS"
+      ],
+      "skill_section_id": "G9_S4",
+      "grade": 9,
+      "from_excel_example": false
+    },
+    "g9_sci_05": {
+      "lesson_id": "g9_sci_05",
+      "title": "Pressure Exerted by Solid",
+      "topic_id": "G9_S5_PRE_SOLID",
+      "legacy_topic_id": "g9_science_ch05",
+      "skill_topic_ids": [
+        "G9_S5_PRE_SOLID",
+        "G9_S5_PRE_CALC"
+      ],
+      "skill_section_id": "G9_S5",
+      "grade": 9,
+      "from_excel_example": false
+    },
+    "g9_sci_06": {
+      "lesson_id": "g9_sci_06",
+      "title": "The Human Circulatory System",
+      "topic_id": "G9_S6_SYS_CIRCUL",
+      "legacy_topic_id": "g9_science_ch06",
+      "skill_topic_ids": [
+        "G9_S6_SYS_CIRCUL",
+        "G9_S6_SYS_BLOOD"
+      ],
+      "skill_section_id": "G9_S6",
+      "grade": 9,
+      "from_excel_example": false
+    },
+    "g9_sci_07": {
+      "lesson_id": "g9_sci_07",
+      "title": "Plant Growth Substances",
+      "topic_id": "G9_S7_PLA_GROWTH",
+      "legacy_topic_id": "g9_science_ch07",
+      "skill_topic_ids": [
+        "G9_S7_PLA_GROWTH",
+        "G9_S7_PLA_HORMON"
+      ],
+      "skill_section_id": "G9_S7",
+      "grade": 9,
+      "from_excel_example": false
+    },
+    "g9_sci_08": {
+      "lesson_id": "g9_sci_08",
+      "title": "Support and Movements of Organisms",
+      "topic_id": "G9_S8_ORG_SUPPORT",
+      "legacy_topic_id": "g9_science_ch08",
+      "skill_topic_ids": [
+        "G9_S8_ORG_SUPPORT",
+        "G9_S8_ORG_MOVE"
+      ],
+      "skill_section_id": "G9_S8",
+      "grade": 9,
+      "from_excel_example": false
+    },
+    "g9_sci_09": {
+      "lesson_id": "g9_sci_09",
+      "title": "The Evolutionary Process",
+      "topic_id": "G9_S9_EVO_PROCESS",
+      "legacy_topic_id": "g9_science_ch09",
+      "skill_topic_ids": [
+        "G9_S9_EVO_PROCESS",
+        "G9_S9_EVO_EVIDEN"
+      ],
+      "skill_section_id": "G9_S9",
+      "grade": 9,
+      "from_excel_example": false
+    },
+    "g9_sci_10": {
+      "lesson_id": "g9_sci_10",
+      "title": "Electrolysis",
+      "topic_id": "G9_S10_ELE_LYSIS",
+      "legacy_topic_id": "g9_science_ch10",
+      "skill_topic_ids": [
+        "G9_S10_ELE_LYSIS",
+        "G9_S10_ELE_IONS"
+      ],
+      "skill_section_id": "G9_S10",
+      "grade": 9,
+      "from_excel_example": false
+    },
+    "g9_sci_11": {
+      "lesson_id": "g9_sci_11",
+      "title": "Density",
+      "topic_id": "G9_S11_MAT_DENSITY",
+      "legacy_topic_id": "g9_science_ch11",
+      "skill_topic_ids": [
+        "G9_S11_MAT_DENSITY",
+        "G9_S11_MAT_MEASURE"
+      ],
+      "skill_section_id": "G9_S11",
+      "grade": 9,
+      "from_excel_example": false
+    },
+    "g9_sci_12": {
+      "lesson_id": "g9_sci_12",
+      "title": "Bio-diversity",
+      "topic_id": "G9_S12_BIO_DIVER",
+      "legacy_topic_id": "g9_science_ch12",
+      "skill_topic_ids": [
+        "G9_S12_BIO_DIVER",
+        "G9_S12_BIO_CONSERV"
+      ],
+      "skill_section_id": "G9_S12",
+      "grade": 9,
+      "from_excel_example": false
+    },
+    "g9_sci_13": {
+      "lesson_id": "g9_sci_13",
+      "title": "Artificial Environment and Green Concept",
+      "topic_id": "G9_S13_ENV_GREEN",
+      "legacy_topic_id": "g9_science_ch13",
+      "skill_topic_ids": [
+        "G9_S13_ENV_GREEN",
+        "G9_S13_ENV_ARTIFIC"
+      ],
+      "skill_section_id": "G9_S13",
+      "grade": 9,
+      "from_excel_example": false
+    },
+    "g9_sci_14": {
+      "lesson_id": "g9_sci_14",
+      "title": "Reflection and Refraction of Waves",
+      "topic_id": "G9_S14_LIG_REFRAC",
+      "legacy_topic_id": "g9_science_ch14",
+      "skill_topic_ids": [
+        "G9_S14_LIG_REFRAC",
+        "G9_S14_LIG_REFLECT"
+      ],
+      "skill_section_id": "G9_S14",
+      "grade": 9,
+      "from_excel_example": false
+    },
+    "g9_sci_15": {
+      "lesson_id": "g9_sci_15",
+      "title": "Simple Machines",
+      "topic_id": "G9_S15_MAC_SIMPLE",
+      "legacy_topic_id": "g9_science_ch15",
+      "skill_topic_ids": [
+        "G9_S15_MAC_SIMPLE",
+        "G9_S15_MAC_WORK"
+      ],
+      "skill_section_id": "G9_S15",
+      "grade": 9,
+      "from_excel_example": false
+    },
+    "g9_sci_16": {
+      "lesson_id": "g9_sci_16",
+      "title": "Nanotechnology and its Applications",
+      "topic_id": "G9_S16_NAN_TECH",
+      "legacy_topic_id": "g9_science_ch16",
+      "skill_topic_ids": [
+        "G9_S16_NAN_TECH",
+        "G9_S16_NAN_APPLIC"
+      ],
+      "skill_section_id": "G9_S16",
+      "grade": 9,
+      "from_excel_example": false
+    },
+    "g9_sci_17": {
+      "lesson_id": "g9_sci_17",
+      "title": "Lightning Accidents",
+      "topic_id": "G9_S17_LIG_ACCIDEN",
+      "legacy_topic_id": "g9_science_ch17",
+      "skill_topic_ids": [
+        "G9_S17_LIG_ACCIDEN",
+        "G9_S17_LIG_SAFETY"
+      ],
+      "skill_section_id": "G9_S17",
+      "grade": 9,
+      "from_excel_example": false
+    },
+    "g9_sci_18": {
+      "lesson_id": "g9_sci_18",
+      "title": "Natural Disasters",
+      "topic_id": "G9_S18_DIS_NATURAL",
+      "legacy_topic_id": "g9_science_ch18",
+      "skill_topic_ids": [
+        "G9_S18_DIS_NATURAL",
+        "G9_S18_DIS_PREPARE"
+      ],
+      "skill_section_id": "G9_S18",
+      "grade": 9,
+      "from_excel_example": false
+    },
+    "g9_sci_19": {
+      "lesson_id": "g9_sci_19",
+      "title": "Sustainable Use of Natural Resources",
+      "topic_id": "G9_S19_NAT_SUSTAIN",
+      "legacy_topic_id": "g9_science_ch19",
+      "skill_topic_ids": [
+        "G9_S19_NAT_SUSTAIN",
+        "G9_S19_NAT_RESOUR"
+      ],
+      "skill_section_id": "G9_S19",
+      "grade": 9,
+      "from_excel_example": false
+    }
+  },
+  "skill_to_lesson": {
+    "G6_S1_ORG_CHARS": "g6_sci_01",
+    "G6_S1_ORG_CLASS": "g6_sci_01",
+    "g6_science_ch01": "g6_sci_01",
+    "G6_S2_MAT_STATES": "g6_sci_02",
+    "G6_S2_MAT_PROPS": "g6_sci_02",
+    "g6_science_ch02": "g6_sci_02",
+    "G6_S3_WAT_RESOUR": "g6_sci_03",
+    "G6_S3_WAT_CYCLE": "g6_sci_03",
+    "g6_science_ch03": "g6_sci_03",
+    "G6_S4_ENE_SOURCES": "g6_sci_04",
+    "g6_science_ch04": "g6_sci_04",
+    "G6_S5_LIG_VISION": "g6_sci_05",
+    "G6_S5_LIG_EYE": "g6_sci_05",
+    "g6_science_ch05": "g6_sci_05",
+    "G6_S6_SOU_HEARING": "g6_sci_06",
+    "G6_S6_SOU_WAVES": "g6_sci_06",
+    "g6_science_ch06": "g6_sci_06",
+    "G6_S7_MAG_POLES": "g6_sci_07",
+    "G6_S7_MAG_FORCE": "g6_sci_07",
+    "g6_science_ch07": "g6_sci_07",
+    "G6_S8_ELE_CIRCUITS": "g6_sci_08",
+    "G6_S8_ELE_CONDINS": "g6_sci_08",
+    "g6_science_ch08": "g6_sci_08",
+    "G6_S9_HEA_EFFECTS": "g6_sci_09",
+    "G6_S9_HEA_EXPAND": "g6_sci_09",
+    "g6_science_ch09": "g6_sci_09",
+    "G6_S10_FOO_INTERAC": "g6_sci_10",
+    "G6_S10_FOO_CHAINS": "g6_sci_10",
+    "g6_science_ch10": "g6_sci_10",
+    "G6_S11_WEA_CLIMATE": "g6_sci_11",
+    "G6_S11_WEA_PATTER": "g6_sci_11",
+    "g6_science_ch11": "g6_sci_11",
+    "G7_S1_PLA_DIVER": "g7_sci_01",
+    "G7_S1_PLA_CLASSIF": "g7_sci_01",
+    "g7_science_ch01": "g7_sci_01",
+    "G7_S2_STA_CHARGES": "g7_sci_02",
+    "G7_S2_STA_CAPACIT": "g7_sci_02",
+    "g7_science_ch02": "g7_sci_02",
+    "G7_S3_ELE_SOURCES": "g7_sci_03",
+    "G7_S3_ELE_CURRENTS": "g7_sci_03",
+    "g7_science_ch03": "g7_sci_03",
+    "G7_S4_WAT_SOLVENT": "g7_sci_04",
+    "G7_S4_WAT_COOLANT": "g7_sci_04",
+    "g7_science_ch04": "g7_sci_04",
+    "G7_S5_ACI_IDENTIF": "g7_sci_05",
+    "G7_S5_ACI_INDICAT": "g7_sci_05",
+    "g7_science_ch05": "g7_sci_05",
+    "G7_S6_ANI_CLASSIF": "g7_sci_06",
+    "G7_S6_ANI_ADAPTAT": "g7_sci_06",
+    "g7_science_ch06": "g7_sci_06",
+    "G7_S7_ENE_FORMS": "g7_sci_07",
+    "G7_S7_ENE_TRANSF": "g7_sci_07",
+    "g7_science_ch07": "g7_sci_07",
+    "G7_S8_EAR_STRUCT": "g7_sci_08",
+    "G7_S8_EAR_TECTON": "g7_sci_08",
+    "g7_science_ch08": "g7_sci_08",
+    "G7_S9_LIG_SHADOWS": "g7_sci_09",
+    "G7_S9_LIG_MIRRORS": "g7_sci_09",
+    "g7_science_ch09": "g7_sci_09",
+    "G7_S10_MIC_LIGHT": "g7_sci_10",
+    "G7_S10_MIC_ELECTR": "g7_sci_10",
+    "g7_science_ch10": "g7_sci_10",
+    "G7_S11_SOU_PROPAG": "g7_sci_11",
+    "G7_S11_SOU_HEARING": "g7_sci_11",
+    "g7_science_ch11": "g7_sci_11",
+    "G7_S12_BIO_PROCESS": "g7_sci_12",
+    "G7_S12_BIO_CELLS": "g7_sci_12",
+    "g7_science_ch12": "g7_sci_12",
+    "G7_S13_ATM_LAYERS": "g7_sci_13",
+    "G7_S13_ATM_WEATHER": "g7_sci_13",
+    "g7_science_ch13": "g7_sci_13",
+    "G7_S14_HEA_TEMPER": "g7_sci_14",
+    "G7_S14_HEA_TRANSF": "g7_sci_14",
+    "g7_science_ch14": "g7_sci_14",
+    "G7_S15_SOI_TYPES": "g7_sci_15",
+    "G7_S15_SOI_PROPERT": "g7_sci_15",
+    "g7_science_ch15": "g7_sci_15",
+    "G7_S16_FOR_MOTION": "g7_sci_16",
+    "G7_S16_FOR_TYPES": "g7_sci_16",
+    "g7_science_ch16": "g7_sci_16",
+    "G7_S17_FOO_NUTRIEN": "g7_sci_17",
+    "G7_S17_FOO_BALANC": "g7_sci_17",
+    "g7_science_ch17": "g7_sci_17",
+    "G7_S18_MIN_ROCKS": "g7_sci_18",
+    "G7_S18_MIN_TYPES": "g7_sci_18",
+    "g7_science_ch18": "g7_sci_18",
+    "G7_S19_ENE_SOURCES": "g7_sci_19",
+    "G7_S19_ENE_RENEW": "g7_sci_19",
+    "g7_science_ch19": "g7_sci_19",
+    "G8_S1_BIO_DIVER": "g8_sci_01",
+    "G8_S1_MIC_IMPORT": "g8_sci_01",
+    "g8_science_ch01": "g8_sci_01",
+    "G8_S2_ANI_CLASSIF": "g8_sci_02",
+    "G8_S2_ANI_KEYS": "g8_sci_02",
+    "g8_science_ch02": "g8_sci_02",
+    "G8_S3_PLA_PARTS": "g8_sci_03",
+    "G8_S3_PLA_FUNCT": "g8_sci_03",
+    "g8_science_ch03": "g8_sci_03",
+    "G8_S4_MAT_ELEMENTS": "g8_sci_04",
+    "G8_S4_MAT_COMPOUNDS": "g8_sci_04",
+    "g8_science_ch04": "g8_sci_04",
+    "G8_S5_SOU_WAVES": "g8_sci_05",
+    "G8_S5_SOU_PROPAG": "g8_sci_05",
+    "g8_science_ch05": "g8_sci_05",
+    "G8_S6_MAG_FORCE": "g8_sci_06",
+    "G8_S6_MAG_FIELD": "g8_sci_06",
+    "g8_science_ch06": "g8_sci_06",
+    "G8_S7_ELE_MEASURE": "g8_sci_07",
+    "G8_S7_ELE_UNITS": "g8_sci_07",
+    "g8_science_ch07": "g8_sci_07",
+    "G8_S8_CHA_PHYSICAL": "g8_sci_08",
+    "G8_S8_CHA_BURNING": "g8_sci_08",
+    "g8_science_ch08": "g8_sci_08",
+    "G8_S9_SYS_HUMAN": "g8_sci_09",
+    "G8_S9_SYS_ORGANS": "g8_sci_09",
+    "g8_science_ch09": "g8_sci_09",
+    "G8_S10_ELE_CIRCUIT": "g8_sci_10",
+    "G8_S10_ELE_SAFETY": "g8_sci_10",
+    "g8_science_ch10": "g8_sci_10",
+    "G8_S11_PHO_PROCESS": "g8_sci_11",
+    "G8_S11_PHO_IMPORT": "g8_sci_11",
+    "g8_science_ch11": "g8_sci_11",
+    "G8_S12_LIF_CYCLES": "g8_sci_12",
+    "G8_S12_LIF_STAGES": "g8_sci_12",
+    "g8_science_ch12": "g8_sci_12",
+    "G8_S13_FOO_PRESERV": "g8_sci_13",
+    "G8_S13_FOO_METHODS": "g8_sci_13",
+    "g8_science_ch13": "g8_sci_13",
+    "G8_S14_SOL_SYSTEM": "g8_sci_14",
+    "G8_S14_SOL_EXPLORE": "g8_sci_14",
+    "g8_science_ch14": "g8_sci_14",
+    "G8_S15_DIS_NATURAL": "g8_sci_15",
+    "G8_S15_DIS_SAFETY": "g8_sci_15",
+    "g8_science_ch15": "g8_sci_15",
+    "G9_S1_MIC_APPLIC": "g9_sci_01",
+    "G9_S1_MIC_USES": "g9_sci_01",
+    "g9_science_ch01": "g9_sci_01",
+    "G9_S2_SEN_EYE": "g9_sci_02",
+    "G9_S2_SEN_EAR": "g9_sci_02",
+    "g9_science_ch02": "g9_sci_02",
+    "G9_S3_NAT_ATOMS": "g9_sci_03",
+    "G9_S3_NAT_CONFIG": "g9_sci_03",
+    "g9_science_ch03": "g9_sci_03",
+    "G9_S4_FOR_BASIC": "g9_sci_04",
+    "G9_S4_FOR_LAWS": "g9_sci_04",
+    "g9_science_ch04": "g9_sci_04",
+    "G9_S5_PRE_SOLID": "g9_sci_05",
+    "G9_S5_PRE_CALC": "g9_sci_05",
+    "g9_science_ch05": "g9_sci_05",
+    "G9_S6_SYS_CIRCUL": "g9_sci_06",
+    "G9_S6_SYS_BLOOD": "g9_sci_06",
+    "g9_science_ch06": "g9_sci_06",
+    "G9_S7_PLA_GROWTH": "g9_sci_07",
+    "G9_S7_PLA_HORMON": "g9_sci_07",
+    "g9_science_ch07": "g9_sci_07",
+    "G9_S8_ORG_SUPPORT": "g9_sci_08",
+    "G9_S8_ORG_MOVE": "g9_sci_08",
+    "g9_science_ch08": "g9_sci_08",
+    "G9_S9_EVO_PROCESS": "g9_sci_09",
+    "G9_S9_EVO_EVIDEN": "g9_sci_09",
+    "g9_science_ch09": "g9_sci_09",
+    "G9_S10_ELE_LYSIS": "g9_sci_10",
+    "G9_S10_ELE_IONS": "g9_sci_10",
+    "g9_science_ch10": "g9_sci_10",
+    "G9_S11_MAT_DENSITY": "g9_sci_11",
+    "G9_S11_MAT_MEASURE": "g9_sci_11",
+    "g9_science_ch11": "g9_sci_11",
+    "G9_S12_BIO_DIVER": "g9_sci_12",
+    "G9_S12_BIO_CONSERV": "g9_sci_12",
+    "g9_science_ch12": "g9_sci_12",
+    "G9_S13_ENV_GREEN": "g9_sci_13",
+    "G9_S13_ENV_ARTIFIC": "g9_sci_13",
+    "g9_science_ch13": "g9_sci_13",
+    "G9_S14_LIG_REFRAC": "g9_sci_14",
+    "G9_S14_LIG_REFLECT": "g9_sci_14",
+    "g9_science_ch14": "g9_sci_14",
+    "G9_S15_MAC_SIMPLE": "g9_sci_15",
+    "G9_S15_MAC_WORK": "g9_sci_15",
+    "g9_science_ch15": "g9_sci_15",
+    "G9_S16_NAN_TECH": "g9_sci_16",
+    "G9_S16_NAN_APPLIC": "g9_sci_16",
+    "g9_science_ch16": "g9_sci_16",
+    "G9_S17_LIG_ACCIDEN": "g9_sci_17",
+    "G9_S17_LIG_SAFETY": "g9_sci_17",
+    "g9_science_ch17": "g9_sci_17",
+    "G9_S18_DIS_NATURAL": "g9_sci_18",
+    "G9_S18_DIS_PREPARE": "g9_sci_18",
+    "g9_science_ch18": "g9_sci_18",
+    "G9_S19_NAT_SUSTAIN": "g9_sci_19",
+    "G9_S19_NAT_RESOUR": "g9_sci_19",
+    "g9_science_ch19": "g9_sci_19"
+  },
+  "naming_pattern": "G{grade}_S{section}_{DOMAIN}_{FOCUS}"
+}

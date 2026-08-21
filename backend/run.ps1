@@ -6,4 +6,4 @@ if (-not (Test-Path $py)) {
     Write-Error "Missing .venv. Run: py -3.12 -m venv .venv  then  .\bootstrap.ps1"
     exit 1
 }
-& $py -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+& $py -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000

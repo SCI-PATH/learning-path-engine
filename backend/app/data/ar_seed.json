@@ -1,0 +1,92 @@
+[
+  {
+    "lesson_id": "g6_sci_07",
+    "grade": 6,
+    "title": "Magnets",
+    "model_url": "",
+    "poster_url": "",
+    "caption": "Magnets — look at the N and S poles while you learn magnetic force.",
+    "source": "seed"
+  },
+  {
+    "lesson_id": "g6_sci_03",
+    "grade": 6,
+    "title": "Water as a Natural Resource",
+    "model_url": "https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Models@master/2.0/WaterBottle/glTF-Binary/WaterBottle.glb",
+    "poster_url": "",
+    "caption": "Water lesson — a simple water bottle model for this chapter.",
+    "source": "seed"
+  },
+  {
+    "lesson_id": "g6_sci_01",
+    "grade": 6,
+    "title": "Wonders of the Living World",
+    "model_url": "https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Assets@main/Models/DiffuseTransmissionPlant/glTF-Binary/DiffuseTransmissionPlant.glb",
+    "poster_url": "",
+    "caption": "Living world — a potted plant model for living things.",
+    "source": "seed"
+  },
+  {
+    "lesson_id": "g7_sci_01",
+    "grade": 7,
+    "title": "Plant Diversity",
+    "model_url": "https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Assets@main/Models/DiffuseTransmissionPlant/glTF-Binary/DiffuseTransmissionPlant.glb",
+    "poster_url": "",
+    "caption": "Plant Diversity — a real plant model while you learn plant features.",
+    "source": "seed"
+  },
+  {
+    "lesson_id": "g7_sci_06",
+    "grade": 7,
+    "title": "Animal Diversity",
+    "model_url": "https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Models@master/2.0/Duck/glTF-Binary/Duck.glb",
+    "poster_url": "",
+    "caption": "Animal Diversity — a simple animal model for this chapter.",
+    "source": "seed"
+  },
+  {
+    "lesson_id": "g7_sci_08",
+    "grade": 7,
+    "title": "The Nature of the Earth",
+    "model_url": "https://modelviewer.dev/shared-assets/models/Astronaut.glb",
+    "poster_url": "",
+    "caption": "Earth lesson — connect this figure to our planet and its structure.",
+    "source": "seed"
+  },
+  {
+    "lesson_id": "g8_sci_03",
+    "grade": 8,
+    "title": "Diversity and Functions of Plant Parts",
+    "model_url": "https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Assets@main/Models/DiffuseTransmissionPlant/glTF-Binary/DiffuseTransmissionPlant.glb",
+    "poster_url": "",
+    "caption": "Plant parts — a plant model for this chapter.",
+    "source": "seed"
+  },
+  {
+    "lesson_id": "g8_sci_06",
+    "grade": 8,
+    "title": "Magnets",
+    "model_url": "",
+    "poster_url": "",
+    "caption": "Magnets — N and S poles for magnetic materials and force.",
+    "source": "seed"
+  },
+  {
+    "lesson_id": "g8_sci_14",
+    "grade": 8,
+    "title": "Phenomena and Exploration of the Solar System",
+    "model_url": "https://modelviewer.dev/shared-assets/models/Astronaut.glb",
+    "poster_url": "",
+    "caption": "Solar system — astronaut model for space exploration.",
+    "source": "seed"
+  },
+  {
+    "lesson_id": "g9_sci_15",
+    "grade": 9,
+    "title": "Simple Machines",
+    "model_url": "https://modelviewer.dev/shared-assets/models/RobotExpressive.glb",
+    "poster_url": "",
+    "caption": "Simple machines — a robot model to talk about machines and work.",
+    "source": "seed"
+  }
+]
