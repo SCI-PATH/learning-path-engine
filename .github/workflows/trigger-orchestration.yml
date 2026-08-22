@@ -1,5 +1,6 @@
 # Notifies deployment-orchestration to rebuild LPE only.
 # Secret required: ORCHESTRATION_DISPATCH_TOKEN (PAT with repo access to deployment-orchestration)
+# CI test: push to dev/main triggers sci-path-deploy with service=lpe only.
 
 name: trigger-orchestration
 
