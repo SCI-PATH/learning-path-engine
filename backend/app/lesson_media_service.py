@@ -22,6 +22,7 @@ from app.lesson_media_store import (
     get_media,
     list_lesson_images,
     save_summary_draft,
+    upsert_links,
     upsert_videos,
     upsert_youtube,
 )
@@ -177,6 +178,16 @@ def public_media(lesson_id: str, *, student: bool = False) -> dict[str, Any]:
     if student:
         gallery = [img for img in gallery if img.get("image_type") == "gallery"]
 
+    links_in = row.get("links") if isinstance(row.get("links"), list) else []
+    additional_materials = [
+        {
+            "title": str(item.get("title") or f"Resource {i + 1}"),
+            "url": str(item.get("url") or ""),
+        }
+        for i, item in enumerate(links_in)
+        if isinstance(item, dict) and str(item.get("url") or "").strip()
+    ]
+
     return {
         "lesson_id": lesson_id,
         "title": (le.title if le else None) or lesson_id,
@@ -189,6 +200,7 @@ def public_media(lesson_id: str, *, student: bool = False) -> dict[str, Any]:
         "summary": summary_out,
         "summary_image_url": image_out,
         "gallery_images": gallery,
+        "additional_materials": additional_materials,
         "summary_approved": approved,
         "summary_generated_at": row.get("summary_generated_at"),
         "summary_approved_at": row.get("summary_approved_at"),
@@ -226,6 +238,19 @@ def set_lesson_videos(
         if url and not youtube_embed_url(url):
             raise ValueError(f"Invalid YouTube URL: {url}")
     upsert_videos(lesson_id, videos=videos, teacher_id=teacher_id)
+    return public_media(lesson_id, student=False)
+
+
+def set_lesson_links(
+    lesson_id: str,
+    *,
+    links: list[dict[str, str]],
+    teacher_id: str = "teacher-1",
+) -> dict[str, Any]:
+    cur = load_curriculum()
+    if not cur.by_lesson_id(lesson_id):
+        raise KeyError(f"Unknown lesson_id: {lesson_id}")
+    upsert_links(lesson_id, links=links, teacher_id=teacher_id)
     return public_media(lesson_id, student=False)
 
 

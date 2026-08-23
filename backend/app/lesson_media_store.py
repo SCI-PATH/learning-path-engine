@@ -73,6 +73,12 @@ def init_lesson_media_db() -> None:
         }
         if "videos_json" not in columns:
             conn.execute("ALTER TABLE lesson_media ADD COLUMN videos_json TEXT")
+        if "links_json" not in columns:
+            conn.execute("ALTER TABLE lesson_media ADD COLUMN links_json TEXT")
+        if "cheatsheet_json" not in columns:
+            conn.execute("ALTER TABLE lesson_media ADD COLUMN cheatsheet_json TEXT")
+        if "cheatsheet_generated_at" not in columns:
+            conn.execute("ALTER TABLE lesson_media ADD COLUMN cheatsheet_generated_at TEXT")
         conn.commit()
     finally:
         conn.close()
@@ -256,6 +262,81 @@ def seed_demo_summaries() -> None:
         conn.close()
 
 
+def _parse_cheatsheet(raw: Any) -> dict[str, Any] | None:
+    if raw is None:
+        return None
+    if isinstance(raw, dict):
+        return raw
+    if not str(raw).strip():
+        return None
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError:
+        return None
+    return data if isinstance(data, dict) else None
+
+
+def get_cheatsheet(lesson_id: str) -> dict[str, Any] | None:
+    row = get_media(lesson_id)
+    if not row:
+        return None
+    sheet = row.get("cheatsheet")
+    if isinstance(sheet, dict) and sheet.get("sections"):
+        return sheet
+    return None
+
+
+def save_cheatsheet(lesson_id: str, cheatsheet: dict[str, Any]) -> dict[str, Any]:
+    """Persist generated cheat sheet (student-facing, no teacher approval)."""
+    init_lesson_media_db()
+    lid = (lesson_id or "").strip()
+    if not lid:
+        raise ValueError("lesson_id is required")
+    now = _now()
+    payload = json.dumps(cheatsheet)
+    grade, title = _resolve_grade_title(lid)
+    _ensure_media_row(lid, "cheatsheet")
+
+    if using_postgres():
+        conn = _pg_connect()
+        try:
+            with pg_cursor(conn) as cur:
+                cur.execute(
+                    f"""
+                    UPDATE {SCHEMA}.verified_lesson_media
+                    SET cheatsheet_json = %s::jsonb,
+                        cheatsheet_generated_at = NOW(),
+                        updated_at = NOW()
+                    WHERE lesson_id = %s
+                    """,
+                    (payload, lid),
+                )
+            conn.commit()
+        except Exception:
+            conn.rollback()
+            raise
+        finally:
+            conn.close()
+        return get_cheatsheet(lid) or cheatsheet
+
+    conn = _connect_sqlite()
+    try:
+        conn.execute(
+            """
+            UPDATE lesson_media
+            SET cheatsheet_json = ?,
+                cheatsheet_generated_at = ?,
+                updated_at = ?
+            WHERE lesson_id = ?
+            """,
+            (payload, now, now, lid),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+    return cheatsheet
+
+
 def _parse_summary(raw: Any) -> dict[str, Any] | None:
     if raw is None:
         return None
@@ -268,6 +349,26 @@ def _parse_summary(raw: Any) -> dict[str, Any] | None:
     except json.JSONDecodeError:
         return None
     return data if isinstance(data, dict) else None
+
+
+def _parse_links(raw: Any) -> list[dict[str, str]]:
+    links: list[dict[str, str]] = []
+    data = raw
+    if isinstance(raw, str) and raw.strip():
+        try:
+            data = json.loads(raw)
+        except json.JSONDecodeError:
+            data = None
+    if isinstance(data, list):
+        for i, item in enumerate(data):
+            if not isinstance(item, dict):
+                continue
+            url = str(item.get("url") or "").strip()
+            if not url:
+                continue
+            title = str(item.get("title") or f"Resource {i + 1}").strip()
+            links.append({"title": title[:120], "url": url})
+    return links
 
 
 def _parse_videos(raw: Any, legacy_url: str = "") -> list[dict[str, str]]:
@@ -307,6 +408,8 @@ def _row_to_dict(row: Any) -> dict[str, Any] | None:
     d["summary_approved"] = bool(d.get("summary_approved"))
     d["youtube_url"] = (d.get("youtube_url") or "").strip()
     d["videos"] = _parse_videos(d.pop("videos_json", None), d["youtube_url"])
+    d["links"] = _parse_links(d.pop("links_json", None))
+    d["cheatsheet"] = _parse_cheatsheet(d.pop("cheatsheet_json", None))
     d["summary_image_url"] = (d.get("summary_image_url") or "").strip() or None
     return d
 
@@ -478,6 +581,75 @@ def upsert_videos(
               updated_at=excluded.updated_at
             """,
             (lid, legacy_url, videos_json, teacher_id, now),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+    return get_media(lid) or {}
+
+
+def upsert_links(
+    lesson_id: str,
+    *,
+    links: list[dict[str, str]],
+    teacher_id: str = "teacher-1",
+) -> dict[str, Any]:
+    init_lesson_media_db()
+    lid = (lesson_id or "").strip()
+    if not lid:
+        raise ValueError("lesson_id is required")
+    now = _now()
+    cleaned: list[dict[str, str]] = []
+    for i, item in enumerate(links[:20]):
+        if not isinstance(item, dict):
+            continue
+        url = str(item.get("url") or "").strip()
+        if not url:
+            continue
+        if not (url.startswith("http://") or url.startswith("https://")):
+            raise ValueError(f"Link must start with http:// or https://: {url}")
+        title = str(item.get("title") or f"Resource {i + 1}").strip()[:120]
+        cleaned.append({"title": title, "url": url})
+    links_json = json.dumps(cleaned)
+    grade, title = _resolve_grade_title(lid)
+
+    if using_postgres():
+        conn = _pg_connect()
+        try:
+            with pg_cursor(conn) as cur:
+                cur.execute(
+                    f"""
+                    INSERT INTO {SCHEMA}.verified_lesson_media (
+                      lesson_id, grade, chapter_title, links_json, updated_by, updated_at
+                    ) VALUES (%s, %s, %s, %s::jsonb, %s, NOW())
+                    ON CONFLICT (lesson_id) DO UPDATE SET
+                      links_json = EXCLUDED.links_json,
+                      updated_by = EXCLUDED.updated_by,
+                      updated_at = NOW()
+                    """,
+                    (lid, grade, title, links_json, teacher_id),
+                )
+            conn.commit()
+        except Exception:
+            conn.rollback()
+            raise
+        finally:
+            conn.close()
+        return get_media(lid) or {}
+
+    conn = _connect_sqlite()
+    try:
+        conn.execute(
+            """
+            INSERT INTO lesson_media (
+              lesson_id, links_json, updated_by, updated_at
+            ) VALUES (?,?,?,?)
+            ON CONFLICT(lesson_id) DO UPDATE SET
+              links_json=excluded.links_json,
+              updated_by=excluded.updated_by,
+              updated_at=excluded.updated_at
+            """,
+            (lid, links_json, teacher_id, now),
         )
         conn.commit()
     finally:

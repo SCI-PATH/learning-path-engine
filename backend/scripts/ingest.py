@@ -4,7 +4,7 @@ Run from the backend folder:
   .\\.venv\\Scripts\\activate
   python scripts\\ingest.py              # all grades G6–G9
   python scripts\\ingest.py --grades 7 8 9
-  python scripts\\ingest.py --pdf \"..\\science G-7 P-I E.pdf\"
+  python scripts\\ingest.py --pdf \"data\\textbooks\\science G-7 P-I E.pdf\"
 
 Ingests textbooks into Chroma under backend\\data\\chroma with chapter-scoped theory chunks.
 """

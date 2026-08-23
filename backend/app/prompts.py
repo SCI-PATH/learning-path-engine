@@ -62,7 +62,12 @@ STRICT GROUNDING (must follow):
    teacher notes.
 7. Do NOT invent quiz questions, homework, classroom activities, or Recap/Summary sections.
 8. Do NOT say you are an AI, or repeat "according to the passages".
-9. Stay on this chapter only.
+9. Do NOT include passage/source numbers or citations like (Passage 3) or [Source 1].
+10. Do NOT include a chapter title or heading line at the start — begin directly with lesson sentences.
+11. Write polished, professional classroom prose: grammatically complete sentences, natural flow, no awkward fragments.
+12. Stay on this chapter only.
+13. Output ONLY the final lesson text students will read. Never show your thinking process, planning steps,
+    analysis of the prompt, constraint lists, or summaries of the sources — start directly with teaching sentences.
 """.strip()
 
 # Concrete, non-overlapping pedagogy per learner level.
@@ -218,24 +223,25 @@ def _output_format_basic(evt: str) -> str:
     if evt == "wrap_up_success":
         return (
             "OUTPUT FORMAT (basic):\n"
-            "Line 1: Short title (3–6 words)\n"
+            "Start directly with lesson sentences — NO title or heading line.\n"
             "Then: 3–4 very short sentences, each on its own line block (blank line between)\n"
-            "No Recap / Summary / Go deeper"
+            "No passage/source citations. No Recap / Summary / Go deeper"
         )
     if evt == "game_failed_return":
         return (
             "OUTPUT FORMAT (basic):\n"
-            "Line 1: Short title\n"
+            "Start directly with lesson sentences — NO title or heading line.\n"
             "Then: gentle re-teach in very short sentences with blank lines between\n"
-            "No Recap / Summary / Go deeper"
+            "No passage/source citations. No Recap / Summary / Go deeper"
         )
     return (
         "OUTPUT FORMAT (basic):\n"
-        "Line 1: Short title (chapter topic)\n"
-        "Then: ONLY short sentences with a blank line after each sentence\n"
-        "For each new term: meaning first, then the real name from the passages\n"
+        "Start directly with lesson sentences — NO title or heading line.\n"
+        "ONLY short sentences with a blank line after each sentence\n"
+        "For each new term: meaning first, then the real name from the sources\n"
         "Keep every scientific/technical name\n"
-        "Do NOT write Recap, Summary, Key takeaways, or Go deeper"
+        "No thinking process, no analysis steps, no source summaries, no planning notes\n"
+        "No passage/source citations. Do NOT write Recap, Summary, Key takeaways, or Go deeper"
     )
 
 
@@ -243,17 +249,17 @@ def _output_format_intermediate(evt: str) -> str:
     if evt == "wrap_up_success":
         return (
             "OUTPUT FORMAT (intermediate):\n"
-            "Line 1: Title\n"
+            "Start directly with lesson sentences — NO title or heading line.\n"
             "Then: 3–4 clear closing sentences with blank lines between\n"
-            "No Recap / Summary / Go deeper"
+            "No passage/source citations. No Recap / Summary / Go deeper"
         )
     return (
         "OUTPUT FORMAT (intermediate):\n"
-        "Line 1: Title\n"
-        "Then: complete chapter teaching as short sentences with blank lines between sentences\n"
+        "Start directly with lesson sentences — NO title or heading line.\n"
+        "Complete chapter teaching as clear, professional sentences with blank lines between sentences\n"
         "Order: introduce topic → define terms → explain process/ideas → include named examples\n"
-        "Keep ALL names/terms from the passages\n"
-        "Do NOT write Recap, Summary, Key takeaways, or Go deeper"
+        "Keep ALL names/terms from the sources\n"
+        "No passage/source citations. Do NOT write Recap, Summary, Key takeaways, or Go deeper"
     )
 
 
@@ -261,18 +267,18 @@ def _output_format_advanced(evt: str) -> str:
     if evt == "wrap_up_success":
         return (
             "OUTPUT FORMAT (advanced):\n"
-            "Line 1: Title\n"
+            "Start directly with lesson sentences — NO title or heading line.\n"
             "Then: 4 precise closing sentences with blank lines between\n"
-            "No Recap / Summary"
+            "No passage/source citations. No Recap / Summary"
         )
     return (
         "OUTPUT FORMAT (advanced):\n"
-        "Line 1: Title\n"
-        "Then: thorough chapter teaching as precise sentences with blank lines between sentences\n"
-        "Include definitions, mechanisms, comparisons, and named examples from passages\n"
+        "Start directly with lesson sentences — NO title or heading line.\n"
+        "Thorough chapter teaching as precise, professional sentences with blank lines between sentences\n"
+        "Include definitions, mechanisms, comparisons, and named examples from sources\n"
         "Then one line that is exactly: Go deeper\n"
-        "Then: 4–8 short enrichment sentences (applications / why it matters / links) FROM passages only\n"
-        "Do NOT write Recap, Summary, Key takeaways, or quiz questions"
+        "Then: 4–8 short enrichment sentences (applications / why it matters / links) FROM sources only\n"
+        "No passage/source citations. Do NOT write Recap, Summary, Key takeaways, or quiz questions"
     )
 
 
@@ -295,9 +301,9 @@ def build_user_message(
     prof = normalize_profile(profile)
     evt = normalize_event(event)
     joined = "\n\n---\n\n".join(
-        f"[PASSAGE {i + 1}]\n{chunk}" for i, chunk in enumerate(passages)
+        f"[SOURCE {i + 1}]\n{chunk}" for i, chunk in enumerate(passages)
     )
-    title_line = f'LESSON: "{lesson_title}"\n' if lesson_title else ""
+    title_line = f'CHAPTER: "{lesson_title}"\n' if lesson_title else ""
     output_fmt = build_output_format(prof, evt)
 
     return (
@@ -305,13 +311,15 @@ def build_user_message(
         f"{title_line}"
         f"LEARNER_LEVEL: {prof}\n\n"
         f"{output_fmt}\n\n"
-        f"PASSAGES (sole source of truth):\n{joined}\n\n"
+        f"TEXTBOOK EXCERPTS (sole source of truth — do not cite excerpt numbers in your answer):\n{joined}\n\n"
         f"TASK:\n"
         f"- Write the lesson for LEARNER_LEVEL={prof} only (follow that level's rules; do not mix levels).\n"
-        f"- Use ONLY theory/lesson facts from the passages.\n"
+        f"- Use ONLY theory/lesson facts from the excerpts.\n"
         f"- Keep every scientific name and technical term that appears.\n"
         f"- Cover the chapter thoroughly (not a tiny summary).\n"
         f"- One sentence per blank-line block for slide reading.\n"
-        f"- No activities, questions, exercises, Recap, or Summary.\n"
+        f"- No title line, no passage/source citations, no activities, questions, exercises, Recap, or Summary.\n"
+        f"- No thinking process, planning steps, constraint lists, or source-by-source summaries.\n"
+        f"- Professional, grammatically correct sentences.\n"
         f"- Follow OUTPUT FORMAT and GROUNDING rules exactly."
     )

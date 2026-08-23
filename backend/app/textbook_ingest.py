@@ -16,6 +16,7 @@ Metadata:
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Iterable
 
@@ -25,18 +26,23 @@ from app.chroma_setup import COLLECTION_NAME, get_chroma_client, get_textbook_co
 from app.content_filters import clean_page_text, content_type_for_chunk
 from app.curriculum import load_curriculum
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_PDF_PATH = REPO_ROOT / "science G-6 E.pdf"
+# Local dev + Docker default: backend/data/textbooks (override with TEXTBOOK_PDF_ROOT).
+BACKEND_ROOT = Path(__file__).resolve().parents[1]
+TEXTBOOK_DIR = Path(
+    os.environ.get("TEXTBOOK_PDF_ROOT", "").strip()
+    or str(BACKEND_ROOT / "data" / "textbooks")
+)
+DEFAULT_PDF_PATH = TEXTBOOK_DIR / "science G-6 E.pdf"
 
-# All known textbooks at repo root (ingest-all uses this list).
+# All known textbooks (ingest-all uses this list).
 DEFAULT_PDF_PATHS: tuple[Path, ...] = (
-    REPO_ROOT / "science G-6 E.pdf",
-    REPO_ROOT / "science G-7 P-I E.pdf",
-    REPO_ROOT / "science G-7 P-II E.pdf",
-    REPO_ROOT / "science G8 P-I E.pdf",
-    REPO_ROOT / "science G-8 P-II E.pdf",
-    REPO_ROOT / "science G-9 P-I E.pdf",
-    REPO_ROOT / "Science Part II English G-9.pdf",
+    TEXTBOOK_DIR / "science G-6 E.pdf",
+    TEXTBOOK_DIR / "science G-7 P-I E.pdf",
+    TEXTBOOK_DIR / "science G-7 P-II E.pdf",
+    TEXTBOOK_DIR / "science G8 P-I E.pdf",
+    TEXTBOOK_DIR / "science G-8 P-II E.pdf",
+    TEXTBOOK_DIR / "science G-9 P-I E.pdf",
+    TEXTBOOK_DIR / "Science Part II English G-9.pdf",
 )
 
 

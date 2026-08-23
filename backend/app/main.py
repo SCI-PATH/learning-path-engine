@@ -21,6 +21,7 @@ from app.ar_topic_service import (
     list_teacher_topic_ar_packs,
     get_public_topic_ar_pack,
 )
+from app.cheat_sheet_service import get_or_generate_cheatsheet
 from app.lesson_media_store import init_lesson_media_db
 from app.lesson_media_service import (
     approve_lesson_summary,
@@ -29,6 +30,7 @@ from app.lesson_media_service import (
     public_media,
     remove_lesson_image,
     set_lesson_videos,
+    set_lesson_links,
     set_lesson_youtube,
     upload_lesson_image_file,
 )
@@ -358,6 +360,20 @@ class TeacherLessonVideosRequest(BaseModel):
         default_factory=list,
         max_length=20,
         description="Ordered video library for this chapter.",
+    )
+    teacher_id: str = Field(default="teacher-1")
+
+
+class LessonLinkItem(BaseModel):
+    title: str = Field(default="", max_length=120)
+    url: str = Field(..., description="HTTPS link to extra reading or reference site")
+
+
+class TeacherLessonLinksRequest(BaseModel):
+    links: list[LessonLinkItem] = Field(
+        default_factory=list,
+        max_length=20,
+        description="Additional material URLs for this chapter.",
     )
     teacher_id: str = Field(default="teacher-1")
 
@@ -1531,6 +1547,31 @@ def get_lesson_media(lesson_id: str, preview: bool = False) -> dict[str, Any]:
 
 
 @app.get(
+    "/lesson/{lesson_id}/cheatsheet",
+    tags=["student-lessons"],
+    summary="Chapter cheat sheet / short notes (Chroma + LLM, cached per lesson)",
+)
+def get_lesson_cheatsheet(
+    lesson_id: str,
+    force: bool = Query(False, description="Regenerate even if cached"),
+) -> dict[str, Any]:
+    """Static revision notes for the chapter — same for all lesson steps."""
+    _require_llm_keys()
+    cur = load_curriculum()
+    if not cur.by_lesson_id(lesson_id):
+        raise HTTPException(status_code=404, detail=f"Unknown lesson_id: {lesson_id!r}")
+    try:
+        return get_or_generate_cheatsheet(lesson_id, force=force)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except Exception as exc:
+        log.exception("cheatsheet failed lesson=%s", lesson_id)
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+
+@app.get(
     "/teacher/media/{lesson_id}",
     tags=["teacher-media"],
     summary="Get chapter YouTube + summary (teacher view)",
@@ -1573,6 +1614,27 @@ def teacher_set_videos(
         return set_lesson_videos(
             lesson_id,
             videos=[item.model_dump() for item in body.videos],
+            teacher_id=body.teacher_id,
+        )
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.put(
+    "/teacher/media/{lesson_id}/links",
+    tags=["teacher-media"],
+    summary="Replace additional material links for a chapter",
+)
+def teacher_set_links(
+    lesson_id: str,
+    body: TeacherLessonLinksRequest,
+) -> dict[str, Any]:
+    try:
+        return set_lesson_links(
+            lesson_id,
+            links=[item.model_dump() for item in body.links],
             teacher_id=body.teacher_id,
         )
     except KeyError as exc:

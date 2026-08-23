@@ -6,7 +6,8 @@ Providers (OpenAI-compatible `chat.completions`):
   **Groq** (preferred if set): https://console.groq.com/
     GROQ_API_KEY
     GROQ_BASE_URL   — default https://api.groq.com/openai/v1
-    GROQ_MODEL      — default openai/gpt-oss-120b (see Groq console for current ids)
+    GROQ_MODEL      — default openai/gpt-oss-120b (llama-3.3-70b retired Aug 2026)
+    GROQ_FALLBACK_MODEL — default qwen/qwen3.6-27b when primary is empty or unavailable
 
   **xAI Grok** (if GROQ_API_KEY is unset and xAI key is set):
     XAI_API_KEY or GROK_API_KEY
@@ -23,7 +24,9 @@ import os
 import time
 
 from app.chroma_setup import COLLECTION_NAME, get_chroma_client
-from app.content_filters import is_non_lesson_chunk, scrub_chunk_for_lesson
+import re
+
+from app.content_filters import is_non_lesson_chunk, scrub_chunk_for_lesson, polish_generated_lesson
 from app.topic_ids import chroma_theory_where, resolve_chroma_topic_id, resolve_lesson
 from app.prompts import (
     PROFILE_MAX_TOKENS,
@@ -180,19 +183,87 @@ def generate_lesson_text(
         event=event,
     )
 
-    resp = client.chat.completions.create(
-        model=model,
-        temperature=PROFILE_TEMPERATURE[prof],
-        max_tokens=PROFILE_MAX_TOKENS[prof],
-        messages=[
-            {"role": "system", "content": system},
-            {"role": "user", "content": user},
-        ],
-    )
-    choice = resp.choices[0].message.content
-    if not choice:
-        raise RuntimeError("Empty completion from model.")
-    return choice.strip()
+    messages = [
+        {"role": "system", "content": system},
+        {"role": "user", "content": user},
+    ]
+    models = [model]
+    if os.getenv("GROQ_API_KEY"):
+        fallback = os.getenv("GROQ_FALLBACK_MODEL", "qwen/qwen3.6-27b").strip()
+        if fallback and fallback not in models:
+            models.append(fallback)
+
+    last_exc: Exception | None = None
+    for model_id in models:
+        try:
+            choice = _chat_completion_text(
+                client, model_id, messages, PROFILE_MAX_TOKENS[prof], PROFILE_TEMPERATURE[prof], topic_id
+            )
+            if choice:
+                if model_id != model:
+                    log.info("llm fallback model=%s topic=%r", model_id, topic_id)
+                return polish_generated_lesson(choice, lesson_title=lesson_title)
+            log.warning("empty completion from model=%s topic=%r", model_id, topic_id)
+        except Exception as exc:
+            last_exc = exc
+            log.warning("llm model=%s failed topic=%r: %s", model_id, topic_id, exc)
+
+    msg = "Empty completion from model. Groq may be rate-limited — wait a minute and try again."
+    if last_exc:
+        raise RuntimeError(msg) from last_exc
+    raise RuntimeError(msg)
+
+
+def _completion_extra_body(model: str) -> dict:
+    """Groq reasoning controls — keep only final lesson text in message.content."""
+    m = model.lower()
+    if "qwen" in m:
+        return {"reasoning_effort": "none"}
+    if "gpt-oss" in m:
+        return {"include_reasoning": False, "reasoning_effort": "low"}
+    return {}
+
+
+def _chat_completion_text(
+    client: object,
+    model: str,
+    messages: list[dict[str, str]],
+    max_tokens: int,
+    base_temperature: float,
+    topic_id: str,
+) -> str:
+    """Call chat completions with retries; return stripped text or empty string."""
+    for attempt in range(3):
+        temp = min(base_temperature + (0.05 * attempt), 0.5)
+        try:
+            extra = _completion_extra_body(model)
+            resp = client.chat.completions.create(
+                model=model,
+                temperature=temp,
+                max_tokens=max_tokens,
+                messages=messages,
+                **({"extra_body": extra} if extra else {}),
+            )
+        except Exception as exc:
+            if attempt < 2:
+                log.warning("llm request failed attempt=%s model=%s: %s", attempt + 1, model, exc)
+                time.sleep(2**attempt)
+                continue
+            raise
+        choice = (resp.choices[0].message.content or "").strip()
+        if choice:
+            return choice
+        finish = getattr(resp.choices[0], "finish_reason", None)
+        log.warning(
+            "empty llm completion attempt=%s finish_reason=%s model=%s topic=%r",
+            attempt + 1,
+            finish,
+            model,
+            topic_id,
+        )
+        if attempt < 2:
+            time.sleep(2**attempt)
+    return ""
 
 
 def build_lesson(

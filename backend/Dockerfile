@@ -22,9 +22,10 @@ RUN pip install --upgrade pip \
     && pip install -r requirements.txt
 
 COPY app ./app
+COPY scripts ./scripts
 
 # Runtime persistence: Chroma, SQLite libraries, AR media
-RUN mkdir -p /app/data/chroma /app/data/ar_media
+RUN mkdir -p /app/data/chroma /app/data/ar_media /app/data/textbooks
 
 EXPOSE 8000
 

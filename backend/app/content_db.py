@@ -122,11 +122,32 @@ def ensure_content_schema() -> None:
             ):
                 cur.execute(ddl)
 
+            # Drop legacy CHECK first — updates to basic|intermediate|advanced fail otherwise.
+            # Do this in Python (not format(%%I) inside execute) to avoid psycopg % escaping issues.
+            cur.execute(
+                f"""
+                SELECT c.conname
+                FROM pg_constraint c
+                JOIN pg_class t ON c.conrelid = t.oid
+                JOIN pg_namespace n ON t.relnamespace = n.oid
+                WHERE n.nspname = %s
+                  AND t.relname = 'verified_lesson_content'
+                  AND c.contype = 'c'
+                  AND pg_get_constraintdef(c.oid) ILIKE %s
+                """,
+                (SCHEMA, "%student_level%"),
+            )
+            for (con_name,) in cur.fetchall():
+                cur.execute(
+                    f'ALTER TABLE {SCHEMA}.verified_lesson_content DROP CONSTRAINT "{con_name}"'
+                )
+
             # Migrate legacy knowledge-level labels → basic | intermediate | advanced
             for old, new in (
                 ("weak", "basic"),
                 ("average", "intermediate"),
                 ("strong", "advanced"),
+                ("smart", "advanced"),
             ):
                 cur.execute(
                     f"""
@@ -146,24 +167,11 @@ def ensure_content_schema() -> None:
                     (old,),
                 )
 
-            # Replace CHECK constraint if Postgres still has the legacy one
+            # Re-apply CHECK for the new vocabulary
             cur.execute(
                 f"""
                 DO $$
-                DECLARE
-                  con_name text;
                 BEGIN
-                  SELECT c.conname INTO con_name
-                  FROM pg_constraint c
-                  JOIN pg_class t ON c.conrelid = t.oid
-                  JOIN pg_namespace n ON t.relnamespace = n.oid
-                  WHERE n.nspname = '{SCHEMA}'
-                    AND t.relname = 'verified_lesson_content'
-                    AND c.contype = 'c'
-                    AND pg_get_constraintdef(c.oid) ILIKE '%%student_level%%';
-                  IF con_name IS NOT NULL THEN
-                    EXECUTE format('ALTER TABLE {SCHEMA}.verified_lesson_content DROP CONSTRAINT %%I', con_name);
-                  END IF;
                   ALTER TABLE {SCHEMA}.verified_lesson_content
                     ADD CONSTRAINT verified_lesson_content_student_level_check
                     CHECK (student_level IN ('basic', 'intermediate', 'advanced'));
@@ -203,6 +211,18 @@ def ensure_content_schema() -> None:
             cur.execute(
                 f"ALTER TABLE {SCHEMA}.verified_lesson_media "
                 f"ADD COLUMN IF NOT EXISTS summary_generated_at TIMESTAMPTZ"
+            )
+            cur.execute(
+                f"ALTER TABLE {SCHEMA}.verified_lesson_media "
+                f"ADD COLUMN IF NOT EXISTS links_json JSONB NOT NULL DEFAULT '[]'::jsonb"
+            )
+            cur.execute(
+                f"ALTER TABLE {SCHEMA}.verified_lesson_media "
+                f"ADD COLUMN IF NOT EXISTS cheatsheet_json JSONB"
+            )
+            cur.execute(
+                f"ALTER TABLE {SCHEMA}.verified_lesson_media "
+                f"ADD COLUMN IF NOT EXISTS cheatsheet_generated_at TIMESTAMPTZ"
             )
             cur.execute(
                 f"""

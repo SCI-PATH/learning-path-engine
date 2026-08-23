@@ -3,7 +3,9 @@
 from app.content_filters import (
     content_type_for_chunk,
     is_non_lesson_chunk,
+    polish_generated_lesson,
     scrub_chunk_for_lesson,
+    strip_llm_reasoning,
     strip_non_lesson_sections,
 )
 
@@ -74,3 +76,37 @@ def test_microbial_activities_not_rejected():
         "The main reason for food spoilage is the growth of microorganisms on food."
     )
     assert content_type_for_chunk(text) == "theory"
+
+
+def test_strip_llm_reasoning_removes_planning_prefix():
+    raw = """Here's a thinking process:
+
+1. **Analyze User Input:**
+* **Role:** King Arthur tutor
+* **Constraint 1:** Grounding
+
+2. **Deconstruct Excerpts & Extract Theory/Content:**
+* Source 1: Plants have flowers
+* Source 2: Underground stems
+
+3. **Structure the Lesson (following constraints):**
+Let's draft step-by-step.
+
+*Introduction & Flowering/Non-flowering*
+
+Plants show many different shapes and sizes in our environment.
+
+Some plants produce flowers while others do not.
+"""
+    out = strip_llm_reasoning(raw)
+    assert "thinking process" not in out.lower()
+    assert "Analyze User Input" not in out
+    assert "Source 1:" not in out
+    assert out.startswith("Plants show many different shapes")
+
+
+def test_polish_generated_lesson_strips_cot():
+    raw = "Here's a thinking process:\n\nPlants need sunlight.\n\nLeaves are green."
+    out = polish_generated_lesson(raw)
+    assert "thinking process" not in out.lower()
+    assert "Plants need sunlight." in out

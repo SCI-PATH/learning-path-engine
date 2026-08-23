@@ -290,3 +290,103 @@ def is_usable_lesson_passage(text: str) -> bool:
     if is_non_lesson_chunk(t):
         return False
     return True
+
+
+_PASSAGE_REF = re.compile(
+    r"\s*(?:\([Pp]assage\s+\d+\)|\[[Pp]assage\s+\d+\]|\([Ss]ource\s+\d+\))",
+    re.I,
+)
+
+# Chain-of-thought / planning blocks some reasoning models leak into visible output.
+_COT_LINE = re.compile(
+    r"(?i)^(?:"
+    r"here'?s a thinking process:?|"
+    r"\*?\s*\*\*analyze user input\*?\*?:?|"
+    r"\*?\s*\*\*deconstruct excerpts.*|"
+    r"\*?\s*\*\*structure the lesson.*|"
+    r"let'?s draft step[- ]by[- ]step.*|"
+    r"\*?\s*\*\*constraint\s*\d+|"
+    r"\*?\s*\*\*role:\*\*|"
+    r"\*?\s*\*\*contextual data:\*\*|"
+    r"\d+\.\s+\*\*(?:analyze|deconstruct|structure)\b"
+    r")"
+)
+_COT_SOURCE_SUMMARY = re.compile(r"^\*\s*Source\s+\d+\s*:", re.I)
+_SECTION_ONLY = re.compile(r"^\*[^*\n]+\*$")
+
+
+def strip_llm_reasoning(text: str) -> str:
+    """Drop model planning / chain-of-thought; keep student-facing lesson prose."""
+    t = (text or "").strip()
+    if not t:
+        return ""
+
+    if not (_COT_LINE.search(t) or _COT_SOURCE_SUMMARY.search(t)):
+        return t.strip()
+
+    paragraphs = re.split(r"\n\s*\n", t)
+    kept: list[str] = []
+    started = False
+
+    for para in paragraphs:
+        p = para.strip()
+        if not p:
+            if started:
+                kept.append("")
+            continue
+
+        first_line = p.split("\n", 1)[0].strip()
+        if not started:
+            if _COT_LINE.match(first_line) or _COT_SOURCE_SUMMARY.match(first_line):
+                continue
+            if re.match(r"(?i)^\*?\s*\*\*(?:constraint|role|contextual)\b", first_line):
+                continue
+            if "**Constraint" in p and not re.search(r"[.!?]\s*$", p.split("\n")[-1].strip()):
+                continue
+            if _SECTION_ONLY.match(first_line) and "\n" not in p.strip():
+                continue
+            started = True
+
+        if started and _COT_LINE.match(first_line):
+            continue
+        if started and _COT_SOURCE_SUMMARY.match(first_line):
+            continue
+        if started and _SECTION_ONLY.match(first_line) and "\n" not in p.strip():
+            continue
+        kept.append(p)
+
+    out = "\n\n".join(kept).strip()
+    return out if out else t.strip()
+
+
+def polish_generated_lesson(text: str, *, lesson_title: str | None = None) -> str:
+    """Remove titles, passage citations, chain-of-thought, and tidy slide spacing in LLM output."""
+    t = strip_llm_reasoning(text)
+    if not t:
+        return ""
+
+    t = _PASSAGE_REF.sub("", t)
+    t = re.sub(r"\s+according to the (?:passages|sources)\.", ".", t, flags=re.I)
+
+    lines = t.split("\n")
+    out: list[str] = []
+    dropped_title = False
+    title_norm = (lesson_title or "").strip().lower()
+
+    for line in lines:
+        s = line.strip()
+        if not s:
+            out.append("")
+            continue
+        if not dropped_title and title_norm and s.lower().rstrip(".") == title_norm.rstrip("."):
+            dropped_title = True
+            continue
+        if not dropped_title and not out and len(s.split()) <= 8 and not s.endswith((".", "!", "?")):
+            # Short standalone first line → likely a title the model added anyway.
+            dropped_title = True
+            continue
+        out.append(line.rstrip())
+
+    polished = "\n".join(out)
+    polished = re.sub(r"\n{3,}", "\n\n", polished)
+    return polished.strip()
