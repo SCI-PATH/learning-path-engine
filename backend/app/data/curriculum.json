@@ -1,0 +1,906 @@
+{
+  "default_course_id": "g6_science_sl",
+  "books": [
+    {
+      "course_id": "g6_science_sl",
+      "grade": 6,
+      "part": null,
+      "source": "science G-6 E.pdf",
+      "title": "Grade 6 Science",
+      "description": "Grade 6 Science (English) — chapter-scoped path.",
+      "lessons": [
+        {
+          "lesson_id": "g6_sci_01",
+          "title": "Wonders of the Living World",
+          "topic_id": "G6_S1_ORG_CHARS",
+          "page_start": 15,
+          "page_end": 34,
+          "legacy_topic_id": "g6_science_ch01",
+          "skill_topic_ids": [
+            "G6_S1_ORG_CHARS",
+            "G6_S1_ORG_CLASS"
+          ],
+          "skill_section_id": "G6_S1"
+        },
+        {
+          "lesson_id": "g6_sci_02",
+          "title": "Things Around Us",
+          "topic_id": "G6_S2_MAT_STATES",
+          "page_start": 35,
+          "page_end": 48,
+          "legacy_topic_id": "g6_science_ch02",
+          "skill_topic_ids": [
+            "G6_S2_MAT_STATES",
+            "G6_S2_MAT_PROPS"
+          ],
+          "skill_section_id": "G6_S2"
+        },
+        {
+          "lesson_id": "g6_sci_03",
+          "title": "Water as a Natural Resource",
+          "topic_id": "G6_S3_WAT_RESOUR",
+          "page_start": 49,
+          "page_end": 62,
+          "legacy_topic_id": "g6_science_ch03",
+          "skill_topic_ids": [
+            "G6_S3_WAT_RESOUR",
+            "G6_S3_WAT_CYCLE"
+          ],
+          "skill_section_id": "G6_S3"
+        },
+        {
+          "lesson_id": "g6_sci_04",
+          "title": "Energy in Day to Day Life",
+          "topic_id": "G6_S4_ENE_SOURCES",
+          "page_start": 63,
+          "page_end": 80,
+          "legacy_topic_id": "g6_science_ch04",
+          "skill_topic_ids": [
+            "G6_S4_ENE_SOURCES"
+          ],
+          "skill_section_id": "G6_S4"
+        },
+        {
+          "lesson_id": "g6_sci_05",
+          "title": "Light and Vision",
+          "topic_id": "G6_S5_LIG_VISION",
+          "page_start": 81,
+          "page_end": 100,
+          "legacy_topic_id": "g6_science_ch05",
+          "skill_topic_ids": [
+            "G6_S5_LIG_VISION",
+            "G6_S5_LIG_EYE"
+          ],
+          "skill_section_id": "G6_S5"
+        },
+        {
+          "lesson_id": "g6_sci_06",
+          "title": "Sound and Hearing",
+          "topic_id": "G6_S6_SOU_HEARING",
+          "page_start": 101,
+          "page_end": 112,
+          "legacy_topic_id": "g6_science_ch06",
+          "skill_topic_ids": [
+            "G6_S6_SOU_HEARING",
+            "G6_S6_SOU_WAVES"
+          ],
+          "skill_section_id": "G6_S6"
+        },
+        {
+          "lesson_id": "g6_sci_07",
+          "title": "Magnets",
+          "topic_id": "G6_S7_MAG_POLES",
+          "page_start": 113,
+          "page_end": 123,
+          "legacy_topic_id": "g6_science_ch07",
+          "skill_topic_ids": [
+            "G6_S7_MAG_POLES",
+            "G6_S7_MAG_FORCE"
+          ],
+          "skill_section_id": "G6_S7"
+        },
+        {
+          "lesson_id": "g6_sci_08",
+          "title": "Electricity for a Comfortable Life",
+          "topic_id": "G6_S8_ELE_CIRCUITS",
+          "page_start": 124,
+          "page_end": 146,
+          "legacy_topic_id": "g6_science_ch08",
+          "skill_topic_ids": [
+            "G6_S8_ELE_CIRCUITS",
+            "G6_S8_ELE_CONDINS"
+          ],
+          "skill_section_id": "G6_S8"
+        },
+        {
+          "lesson_id": "g6_sci_09",
+          "title": "Heat and Its Effects",
+          "topic_id": "G6_S9_HEA_EFFECTS",
+          "page_start": 147,
+          "page_end": 161,
+          "legacy_topic_id": "g6_science_ch09",
+          "skill_topic_ids": [
+            "G6_S9_HEA_EFFECTS",
+            "G6_S9_HEA_EXPAND"
+          ],
+          "skill_section_id": "G6_S9"
+        },
+        {
+          "lesson_id": "g6_sci_10",
+          "title": "Food Related Interactions",
+          "topic_id": "G6_S10_FOO_INTERAC",
+          "page_start": 162,
+          "page_end": 172,
+          "legacy_topic_id": "g6_science_ch10",
+          "skill_topic_ids": [
+            "G6_S10_FOO_INTERAC",
+            "G6_S10_FOO_CHAINS"
+          ],
+          "skill_section_id": "G6_S10"
+        },
+        {
+          "lesson_id": "g6_sci_11",
+          "title": "Weather and Climate",
+          "topic_id": "G6_S11_WEA_CLIMATE",
+          "page_start": 173,
+          "page_end": 190,
+          "legacy_topic_id": "g6_science_ch11",
+          "skill_topic_ids": [
+            "G6_S11_WEA_CLIMATE",
+            "G6_S11_WEA_PATTER"
+          ],
+          "skill_section_id": "G6_S11"
+        }
+      ]
+    },
+    {
+      "course_id": "g7_science_p1",
+      "grade": 7,
+      "part": 1,
+      "source": "science G-7 P-I E.pdf",
+      "title": "Grade 7 Science — Part I",
+      "description": "Grade 7 Science Part I (English). PDF offset printed→file ≈ +12.",
+      "lessons": [
+        {
+          "lesson_id": "g7_sci_01",
+          "title": "Plant Diversity",
+          "topic_id": "G7_S1_PLA_DIVER",
+          "page_start": 13,
+          "page_end": 33,
+          "legacy_topic_id": "g7_science_ch01",
+          "skill_topic_ids": [
+            "G7_S1_PLA_DIVER",
+            "G7_S1_PLA_CLASSIF"
+          ],
+          "skill_section_id": "G7_S1"
+        },
+        {
+          "lesson_id": "g7_sci_02",
+          "title": "Static Electricity",
+          "topic_id": "G7_S2_STA_CHARGES",
+          "page_start": 34,
+          "page_end": 45,
+          "legacy_topic_id": "g7_science_ch02",
+          "skill_topic_ids": [
+            "G7_S2_STA_CHARGES",
+            "G7_S2_STA_CAPACIT"
+          ],
+          "skill_section_id": "G7_S2"
+        },
+        {
+          "lesson_id": "g7_sci_03",
+          "title": "Generation of Electricity",
+          "topic_id": "G7_S3_ELE_SOURCES",
+          "page_start": 46,
+          "page_end": 65,
+          "legacy_topic_id": "g7_science_ch03",
+          "skill_topic_ids": [
+            "G7_S3_ELE_SOURCES",
+            "G7_S3_ELE_CURRENTS"
+          ],
+          "skill_section_id": "G7_S3"
+        },
+        {
+          "lesson_id": "g7_sci_04",
+          "title": "Functions of Water",
+          "topic_id": "G7_S4_WAT_SOLVENT",
+          "page_start": 66,
+          "page_end": 74,
+          "legacy_topic_id": "g7_science_ch04",
+          "skill_topic_ids": [
+            "G7_S4_WAT_SOLVENT",
+            "G7_S4_WAT_COOLANT"
+          ],
+          "skill_section_id": "G7_S4"
+        },
+        {
+          "lesson_id": "g7_sci_05",
+          "title": "Acids and Bases",
+          "topic_id": "G7_S5_ACI_IDENTIF",
+          "page_start": 75,
+          "page_end": 83,
+          "legacy_topic_id": "g7_science_ch05",
+          "skill_topic_ids": [
+            "G7_S5_ACI_IDENTIF",
+            "G7_S5_ACI_INDICAT"
+          ],
+          "skill_section_id": "G7_S5"
+        },
+        {
+          "lesson_id": "g7_sci_06",
+          "title": "Animal Diversity",
+          "topic_id": "G7_S6_ANI_CLASSIF",
+          "page_start": 84,
+          "page_end": 98,
+          "legacy_topic_id": "g7_science_ch06",
+          "skill_topic_ids": [
+            "G7_S6_ANI_CLASSIF",
+            "G7_S6_ANI_ADAPTAT"
+          ],
+          "skill_section_id": "G7_S6"
+        },
+        {
+          "lesson_id": "g7_sci_07",
+          "title": "Forms of Energy and Uses",
+          "topic_id": "G7_S7_ENE_FORMS",
+          "page_start": 99,
+          "page_end": 116,
+          "legacy_topic_id": "g7_science_ch07",
+          "skill_topic_ids": [
+            "G7_S7_ENE_FORMS",
+            "G7_S7_ENE_TRANSF"
+          ],
+          "skill_section_id": "G7_S7"
+        },
+        {
+          "lesson_id": "g7_sci_08",
+          "title": "The Nature of the Earth",
+          "topic_id": "G7_S8_EAR_STRUCT",
+          "page_start": 117,
+          "page_end": 126,
+          "legacy_topic_id": "g7_science_ch08",
+          "skill_topic_ids": [
+            "G7_S8_EAR_STRUCT",
+            "G7_S8_EAR_TECTON"
+          ],
+          "skill_section_id": "G7_S8"
+        },
+        {
+          "lesson_id": "g7_sci_09",
+          "title": "Light",
+          "topic_id": "G7_S9_LIG_SHADOWS",
+          "page_start": 127,
+          "page_end": 149,
+          "legacy_topic_id": "g7_science_ch09",
+          "skill_topic_ids": [
+            "G7_S9_LIG_SHADOWS",
+            "G7_S9_LIG_MIRRORS"
+          ],
+          "skill_section_id": "G7_S9"
+        },
+        {
+          "lesson_id": "g7_sci_10",
+          "title": "The Correct Use of the Microscope",
+          "topic_id": "G7_S10_MIC_LIGHT",
+          "page_start": 150,
+          "page_end": 160,
+          "legacy_topic_id": "g7_science_ch10",
+          "skill_topic_ids": [
+            "G7_S10_MIC_LIGHT",
+            "G7_S10_MIC_ELECTR"
+          ],
+          "skill_section_id": "G7_S10"
+        }
+      ]
+    },
+    {
+      "course_id": "g7_science_p2",
+      "grade": 7,
+      "part": 2,
+      "source": "science G-7 P-II E.pdf",
+      "title": "Grade 7 Science — Part II",
+      "description": "Grade 7 Science Part II (English). PDF offset printed→file ≈ +12.",
+      "lessons": [
+        {
+          "lesson_id": "g7_sci_11",
+          "title": "Sound",
+          "topic_id": "G7_S11_SOU_PROPAG",
+          "page_start": 13,
+          "page_end": 22,
+          "legacy_topic_id": "g7_science_ch11",
+          "skill_topic_ids": [
+            "G7_S11_SOU_PROPAG",
+            "G7_S11_SOU_HEARING"
+          ],
+          "skill_section_id": "G7_S11"
+        },
+        {
+          "lesson_id": "g7_sci_12",
+          "title": "Biological Processes",
+          "topic_id": "G7_S12_BIO_PROCESS",
+          "page_start": 23,
+          "page_end": 39,
+          "legacy_topic_id": "g7_science_ch12",
+          "skill_topic_ids": [
+            "G7_S12_BIO_PROCESS",
+            "G7_S12_BIO_CELLS"
+          ],
+          "skill_section_id": "G7_S12"
+        },
+        {
+          "lesson_id": "g7_sci_13",
+          "title": "Atmosphere",
+          "topic_id": "G7_S13_ATM_LAYERS",
+          "page_start": 40,
+          "page_end": 51,
+          "legacy_topic_id": "g7_science_ch13",
+          "skill_topic_ids": [
+            "G7_S13_ATM_LAYERS",
+            "G7_S13_ATM_WEATHER"
+          ],
+          "skill_section_id": "G7_S13"
+        },
+        {
+          "lesson_id": "g7_sci_14",
+          "title": "Heat and Temperature",
+          "topic_id": "G7_S14_HEA_TEMPER",
+          "page_start": 52,
+          "page_end": 70,
+          "legacy_topic_id": "g7_science_ch14",
+          "skill_topic_ids": [
+            "G7_S14_HEA_TEMPER",
+            "G7_S14_HEA_TRANSF"
+          ],
+          "skill_section_id": "G7_S14"
+        },
+        {
+          "lesson_id": "g7_sci_15",
+          "title": "Soil",
+          "topic_id": "G7_S15_SOI_TYPES",
+          "page_start": 71,
+          "page_end": 84,
+          "legacy_topic_id": "g7_science_ch15",
+          "skill_topic_ids": [
+            "G7_S15_SOI_TYPES",
+            "G7_S15_SOI_PROPERT"
+          ],
+          "skill_section_id": "G7_S15"
+        },
+        {
+          "lesson_id": "g7_sci_16",
+          "title": "Force and Motion",
+          "topic_id": "G7_S16_FOR_MOTION",
+          "page_start": 85,
+          "page_end": 97,
+          "legacy_topic_id": "g7_science_ch16",
+          "skill_topic_ids": [
+            "G7_S16_FOR_MOTION",
+            "G7_S16_FOR_TYPES"
+          ],
+          "skill_section_id": "G7_S16"
+        },
+        {
+          "lesson_id": "g7_sci_17",
+          "title": "Nutrients in Food",
+          "topic_id": "G7_S17_FOO_NUTRIEN",
+          "page_start": 98,
+          "page_end": 111,
+          "legacy_topic_id": "g7_science_ch17",
+          "skill_topic_ids": [
+            "G7_S17_FOO_NUTRIEN",
+            "G7_S17_FOO_BALANC"
+          ],
+          "skill_section_id": "G7_S17"
+        },
+        {
+          "lesson_id": "g7_sci_18",
+          "title": "Minerals and Rocks",
+          "topic_id": "G7_S18_MIN_ROCKS",
+          "page_start": 112,
+          "page_end": 124,
+          "legacy_topic_id": "g7_science_ch18",
+          "skill_topic_ids": [
+            "G7_S18_MIN_ROCKS",
+            "G7_S18_MIN_TYPES"
+          ],
+          "skill_section_id": "G7_S18"
+        },
+        {
+          "lesson_id": "g7_sci_19",
+          "title": "Sources of Energy",
+          "topic_id": "G7_S19_ENE_SOURCES",
+          "page_start": 125,
+          "page_end": 140,
+          "legacy_topic_id": "g7_science_ch19",
+          "skill_topic_ids": [
+            "G7_S19_ENE_SOURCES",
+            "G7_S19_ENE_RENEW"
+          ],
+          "skill_section_id": "G7_S19"
+        }
+      ]
+    },
+    {
+      "course_id": "g8_science_p1",
+      "grade": 8,
+      "part": 1,
+      "source": "science G8 P-I E.pdf",
+      "title": "Grade 8 Science — Part I",
+      "description": "Grade 8 Science Part I (English). PDF offset printed→file ≈ +10.",
+      "lessons": [
+        {
+          "lesson_id": "g8_sci_01",
+          "title": "Importance of Microorganisms",
+          "topic_id": "G8_S1_BIO_DIVER",
+          "page_start": 11,
+          "page_end": 21,
+          "legacy_topic_id": "g8_science_ch01",
+          "skill_topic_ids": [
+            "G8_S1_BIO_DIVER",
+            "G8_S1_MIC_IMPORT"
+          ],
+          "skill_section_id": "G8_S1"
+        },
+        {
+          "lesson_id": "g8_sci_02",
+          "title": "Animal Classification",
+          "topic_id": "G8_S2_ANI_CLASSIF",
+          "page_start": 22,
+          "page_end": 33,
+          "legacy_topic_id": "g8_science_ch02",
+          "skill_topic_ids": [
+            "G8_S2_ANI_CLASSIF",
+            "G8_S2_ANI_KEYS"
+          ],
+          "skill_section_id": "G8_S2"
+        },
+        {
+          "lesson_id": "g8_sci_03",
+          "title": "Diversity and Functions of Plant Parts",
+          "topic_id": "G8_S3_PLA_PARTS",
+          "page_start": 34,
+          "page_end": 48,
+          "legacy_topic_id": "g8_science_ch03",
+          "skill_topic_ids": [
+            "G8_S3_PLA_PARTS",
+            "G8_S3_PLA_FUNCT"
+          ],
+          "skill_section_id": "G8_S3"
+        },
+        {
+          "lesson_id": "g8_sci_04",
+          "title": "Properties of Matter",
+          "topic_id": "G8_S4_MAT_ELEMENTS",
+          "page_start": 49,
+          "page_end": 71,
+          "legacy_topic_id": "g8_science_ch04",
+          "skill_topic_ids": [
+            "G8_S4_MAT_ELEMENTS",
+            "G8_S4_MAT_COMPOUNDS"
+          ],
+          "skill_section_id": "G8_S4"
+        },
+        {
+          "lesson_id": "g8_sci_05",
+          "title": "Sound",
+          "topic_id": "G8_S5_SOU_WAVES",
+          "page_start": 72,
+          "page_end": 87,
+          "legacy_topic_id": "g8_science_ch05",
+          "skill_topic_ids": [
+            "G8_S5_SOU_WAVES",
+            "G8_S5_SOU_PROPAG"
+          ],
+          "skill_section_id": "G8_S5"
+        },
+        {
+          "lesson_id": "g8_sci_06",
+          "title": "Magnets",
+          "topic_id": "G8_S6_MAG_FORCE",
+          "page_start": 88,
+          "page_end": 104,
+          "legacy_topic_id": "g8_science_ch06",
+          "skill_topic_ids": [
+            "G8_S6_MAG_FORCE",
+            "G8_S6_MAG_FIELD"
+          ],
+          "skill_section_id": "G8_S6"
+        },
+        {
+          "lesson_id": "g8_sci_07",
+          "title": "Measurements Associated with Electricity",
+          "topic_id": "G8_S7_ELE_MEASURE",
+          "page_start": 105,
+          "page_end": 116,
+          "legacy_topic_id": "g8_science_ch07",
+          "skill_topic_ids": [
+            "G8_S7_ELE_MEASURE",
+            "G8_S7_ELE_UNITS"
+          ],
+          "skill_section_id": "G8_S7"
+        },
+        {
+          "lesson_id": "g8_sci_08",
+          "title": "Changes in Matter",
+          "topic_id": "G8_S8_CHA_PHYSICAL",
+          "page_start": 117,
+          "page_end": 137,
+          "legacy_topic_id": "g8_science_ch08",
+          "skill_topic_ids": [
+            "G8_S8_CHA_PHYSICAL",
+            "G8_S8_CHA_BURNING"
+          ],
+          "skill_section_id": "G8_S8"
+        }
+      ]
+    },
+    {
+      "course_id": "g8_science_p2",
+      "grade": 8,
+      "part": 2,
+      "source": "science G-8 P-II E.pdf",
+      "title": "Grade 8 Science — Part II",
+      "description": "Grade 8 Science Part II (English). PDF offset printed→file ≈ +10.",
+      "lessons": [
+        {
+          "lesson_id": "g8_sci_09",
+          "title": "Human Organ Systems",
+          "topic_id": "G8_S9_SYS_HUMAN",
+          "page_start": 11,
+          "page_end": 27,
+          "legacy_topic_id": "g8_science_ch09",
+          "skill_topic_ids": [
+            "G8_S9_SYS_HUMAN",
+            "G8_S9_SYS_ORGANS"
+          ],
+          "skill_section_id": "G8_S9"
+        },
+        {
+          "lesson_id": "g8_sci_10",
+          "title": "Electricity",
+          "topic_id": "G8_S10_ELE_CIRCUIT",
+          "page_start": 28,
+          "page_end": 55,
+          "legacy_topic_id": "g8_science_ch10",
+          "skill_topic_ids": [
+            "G8_S10_ELE_CIRCUIT",
+            "G8_S10_ELE_SAFETY"
+          ],
+          "skill_section_id": "G8_S10"
+        },
+        {
+          "lesson_id": "g8_sci_11",
+          "title": "Main Biological Processes in Plants",
+          "topic_id": "G8_S11_PHO_PROCESS",
+          "page_start": 56,
+          "page_end": 71,
+          "legacy_topic_id": "g8_science_ch11",
+          "skill_topic_ids": [
+            "G8_S11_PHO_PROCESS",
+            "G8_S11_PHO_IMPORT"
+          ],
+          "skill_section_id": "G8_S11"
+        },
+        {
+          "lesson_id": "g8_sci_12",
+          "title": "Life Cycles of Living Organisms",
+          "topic_id": "G8_S12_LIF_CYCLES",
+          "page_start": 72,
+          "page_end": 89,
+          "legacy_topic_id": "g8_science_ch12",
+          "skill_topic_ids": [
+            "G8_S12_LIF_CYCLES",
+            "G8_S12_LIF_STAGES"
+          ],
+          "skill_section_id": "G8_S12"
+        },
+        {
+          "lesson_id": "g8_sci_13",
+          "title": "Food Preservation",
+          "topic_id": "G8_S13_FOO_PRESERV",
+          "page_start": 90,
+          "page_end": 106,
+          "legacy_topic_id": "g8_science_ch13",
+          "skill_topic_ids": [
+            "G8_S13_FOO_PRESERV",
+            "G8_S13_FOO_METHODS"
+          ],
+          "skill_section_id": "G8_S13"
+        },
+        {
+          "lesson_id": "g8_sci_14",
+          "title": "Phenomena and Exploration of the Solar System",
+          "topic_id": "G8_S14_SOL_SYSTEM",
+          "page_start": 107,
+          "page_end": 137,
+          "legacy_topic_id": "g8_science_ch14",
+          "skill_topic_ids": [
+            "G8_S14_SOL_SYSTEM",
+            "G8_S14_SOL_EXPLORE"
+          ],
+          "skill_section_id": "G8_S14"
+        },
+        {
+          "lesson_id": "g8_sci_15",
+          "title": "Natural Disasters",
+          "topic_id": "G8_S15_DIS_NATURAL",
+          "page_start": 138,
+          "page_end": 152,
+          "legacy_topic_id": "g8_science_ch15",
+          "skill_topic_ids": [
+            "G8_S15_DIS_NATURAL",
+            "G8_S15_DIS_SAFETY"
+          ],
+          "skill_section_id": "G8_S15"
+        }
+      ]
+    },
+    {
+      "course_id": "g9_science_p1",
+      "grade": 9,
+      "part": 1,
+      "source": "science G-9 P-I E.pdf",
+      "title": "Grade 9 Science — Part I",
+      "description": "Grade 9 Science Part I (English). PDF offset printed→file ≈ +12.",
+      "lessons": [
+        {
+          "lesson_id": "g9_sci_01",
+          "title": "Applications of Micro-organisms",
+          "topic_id": "G9_S1_MIC_APPLIC",
+          "page_start": 13,
+          "page_end": 27,
+          "legacy_topic_id": "g9_science_ch01",
+          "skill_topic_ids": [
+            "G9_S1_MIC_APPLIC",
+            "G9_S1_MIC_USES"
+          ],
+          "skill_section_id": "G9_S1"
+        },
+        {
+          "lesson_id": "g9_sci_02",
+          "title": "Eye and Ear",
+          "topic_id": "G9_S2_SEN_EYE",
+          "page_start": 28,
+          "page_end": 49,
+          "legacy_topic_id": "g9_science_ch02",
+          "skill_topic_ids": [
+            "G9_S2_SEN_EYE",
+            "G9_S2_SEN_EAR"
+          ],
+          "skill_section_id": "G9_S2"
+        },
+        {
+          "lesson_id": "g9_sci_03",
+          "title": "Nature and Properties of Matter",
+          "topic_id": "G9_S3_NAT_ATOMS",
+          "page_start": 50,
+          "page_end": 63,
+          "legacy_topic_id": "g9_science_ch03",
+          "skill_topic_ids": [
+            "G9_S3_NAT_ATOMS",
+            "G9_S3_NAT_CONFIG"
+          ],
+          "skill_section_id": "G9_S3"
+        },
+        {
+          "lesson_id": "g9_sci_04",
+          "title": "Basic Concepts Associated with Force",
+          "topic_id": "G9_S4_FOR_BASIC",
+          "page_start": 64,
+          "page_end": 71,
+          "legacy_topic_id": "g9_science_ch04",
+          "skill_topic_ids": [
+            "G9_S4_FOR_BASIC",
+            "G9_S4_FOR_LAWS"
+          ],
+          "skill_section_id": "G9_S4"
+        },
+        {
+          "lesson_id": "g9_sci_05",
+          "title": "Pressure Exerted by Solid",
+          "topic_id": "G9_S5_PRE_SOLID",
+          "page_start": 72,
+          "page_end": 83,
+          "legacy_topic_id": "g9_science_ch05",
+          "skill_topic_ids": [
+            "G9_S5_PRE_SOLID",
+            "G9_S5_PRE_CALC"
+          ],
+          "skill_section_id": "G9_S5"
+        },
+        {
+          "lesson_id": "g9_sci_06",
+          "title": "The Human Circulatory System",
+          "topic_id": "G9_S6_SYS_CIRCUL",
+          "page_start": 84,
+          "page_end": 94,
+          "legacy_topic_id": "g9_science_ch06",
+          "skill_topic_ids": [
+            "G9_S6_SYS_CIRCUL",
+            "G9_S6_SYS_BLOOD"
+          ],
+          "skill_section_id": "G9_S6"
+        },
+        {
+          "lesson_id": "g9_sci_07",
+          "title": "Plant Growth Substances",
+          "topic_id": "G9_S7_PLA_GROWTH",
+          "page_start": 95,
+          "page_end": 100,
+          "legacy_topic_id": "g9_science_ch07",
+          "skill_topic_ids": [
+            "G9_S7_PLA_GROWTH",
+            "G9_S7_PLA_HORMON"
+          ],
+          "skill_section_id": "G9_S7"
+        },
+        {
+          "lesson_id": "g9_sci_08",
+          "title": "Support and Movements of Organisms",
+          "topic_id": "G9_S8_ORG_SUPPORT",
+          "page_start": 101,
+          "page_end": 109,
+          "legacy_topic_id": "g9_science_ch08",
+          "skill_topic_ids": [
+            "G9_S8_ORG_SUPPORT",
+            "G9_S8_ORG_MOVE"
+          ],
+          "skill_section_id": "G9_S8"
+        },
+        {
+          "lesson_id": "g9_sci_09",
+          "title": "The Evolutionary Process",
+          "topic_id": "G9_S9_EVO_PROCESS",
+          "page_start": 110,
+          "page_end": 122,
+          "legacy_topic_id": "g9_science_ch09",
+          "skill_topic_ids": [
+            "G9_S9_EVO_PROCESS",
+            "G9_S9_EVO_EVIDEN"
+          ],
+          "skill_section_id": "G9_S9"
+        }
+      ]
+    },
+    {
+      "course_id": "g9_science_p2",
+      "grade": 9,
+      "part": 2,
+      "source": "Science Part II English G-9.pdf",
+      "title": "Grade 9 Science — Part II",
+      "description": "Grade 9 Science Part II (English). PDF offset printed→file ≈ +12.",
+      "lessons": [
+        {
+          "lesson_id": "g9_sci_10",
+          "title": "Electrolysis",
+          "topic_id": "G9_S10_ELE_LYSIS",
+          "page_start": 13,
+          "page_end": 21,
+          "legacy_topic_id": "g9_science_ch10",
+          "skill_topic_ids": [
+            "G9_S10_ELE_LYSIS",
+            "G9_S10_ELE_IONS"
+          ],
+          "skill_section_id": "G9_S10"
+        },
+        {
+          "lesson_id": "g9_sci_11",
+          "title": "Density",
+          "topic_id": "G9_S11_MAT_DENSITY",
+          "page_start": 22,
+          "page_end": 30,
+          "legacy_topic_id": "g9_science_ch11",
+          "skill_topic_ids": [
+            "G9_S11_MAT_DENSITY",
+            "G9_S11_MAT_MEASURE"
+          ],
+          "skill_section_id": "G9_S11"
+        },
+        {
+          "lesson_id": "g9_sci_12",
+          "title": "Bio-diversity",
+          "topic_id": "G9_S12_BIO_DIVER",
+          "page_start": 31,
+          "page_end": 53,
+          "legacy_topic_id": "g9_science_ch12",
+          "skill_topic_ids": [
+            "G9_S12_BIO_DIVER",
+            "G9_S12_BIO_CONSERV"
+          ],
+          "skill_section_id": "G9_S12"
+        },
+        {
+          "lesson_id": "g9_sci_13",
+          "title": "Artificial Environment and Green Concept",
+          "topic_id": "G9_S13_ENV_GREEN",
+          "page_start": 54,
+          "page_end": 69,
+          "legacy_topic_id": "g9_science_ch13",
+          "skill_topic_ids": [
+            "G9_S13_ENV_GREEN",
+            "G9_S13_ENV_ARTIFIC"
+          ],
+          "skill_section_id": "G9_S13"
+        },
+        {
+          "lesson_id": "g9_sci_14",
+          "title": "Reflection and Refraction of Waves",
+          "topic_id": "G9_S14_LIG_REFRAC",
+          "page_start": 70,
+          "page_end": 95,
+          "legacy_topic_id": "g9_science_ch14",
+          "skill_topic_ids": [
+            "G9_S14_LIG_REFRAC",
+            "G9_S14_LIG_REFLECT"
+          ],
+          "skill_section_id": "G9_S14"
+        },
+        {
+          "lesson_id": "g9_sci_15",
+          "title": "Simple Machines",
+          "topic_id": "G9_S15_MAC_SIMPLE",
+          "page_start": 96,
+          "page_end": 114,
+          "legacy_topic_id": "g9_science_ch15",
+          "skill_topic_ids": [
+            "G9_S15_MAC_SIMPLE",
+            "G9_S15_MAC_WORK"
+          ],
+          "skill_section_id": "G9_S15"
+        },
+        {
+          "lesson_id": "g9_sci_16",
+          "title": "Nanotechnology and its Applications",
+          "topic_id": "G9_S16_NAN_TECH",
+          "page_start": 115,
+          "page_end": 130,
+          "legacy_topic_id": "g9_science_ch16",
+          "skill_topic_ids": [
+            "G9_S16_NAN_TECH",
+            "G9_S16_NAN_APPLIC"
+          ],
+          "skill_section_id": "G9_S16"
+        },
+        {
+          "lesson_id": "g9_sci_17",
+          "title": "Lightning Accidents",
+          "topic_id": "G9_S17_LIG_ACCIDEN",
+          "page_start": 131,
+          "page_end": 140,
+          "legacy_topic_id": "g9_science_ch17",
+          "skill_topic_ids": [
+            "G9_S17_LIG_ACCIDEN",
+            "G9_S17_LIG_SAFETY"
+          ],
+          "skill_section_id": "G9_S17"
+        },
+        {
+          "lesson_id": "g9_sci_18",
+          "title": "Natural Disasters",
+          "topic_id": "G9_S18_DIS_NATURAL",
+          "page_start": 141,
+          "page_end": 163,
+          "legacy_topic_id": "g9_science_ch18",
+          "skill_topic_ids": [
+            "G9_S18_DIS_NATURAL",
+            "G9_S18_DIS_PREPARE"
+          ],
+          "skill_section_id": "G9_S18"
+        },
+        {
+          "lesson_id": "g9_sci_19",
+          "title": "Sustainable Use of Natural Resources",
+          "topic_id": "G9_S19_NAT_SUSTAIN",
+          "page_start": 164,
+          "page_end": 180,
+          "legacy_topic_id": "g9_science_ch19",
+          "skill_topic_ids": [
+            "G9_S19_NAT_SUSTAIN",
+            "G9_S19_NAT_RESOUR"
+          ],
+          "skill_section_id": "G9_S19"
+        }
+      ]
+    }
+  ]
+}

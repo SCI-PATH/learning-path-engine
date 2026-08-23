@@ -1,0 +1,20 @@
+.venv
+__pycache__
+**/__pycache__
+*.py[cod]
+*.egg-info
+.env
+.env.*
+!.env.example
+# Runtime DBs / Chroma only (keep app/data/*.json in the image)
+/data
+.git
+.gitignore
+tests
+*.md
+openapi.json
+bootstrap.ps1
+run.ps1
+.pytest_cache
+.mypy_cache
+.ruff_cache
