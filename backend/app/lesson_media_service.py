@@ -13,6 +13,7 @@ from typing import Any
 from urllib.parse import parse_qs, urlparse
 
 from app.ar_images import MEDIA_ROOT, STYLE_SUFFIX, generate_cartoon_image, media_dir, public_image_path
+from app.s3_gallery import delete_gallery_url, s3_enabled, upload_gallery_bytes
 from app.content_library import find_content, list_content
 from app.curriculum import load_curriculum
 from app.lesson_media_store import (
@@ -396,9 +397,21 @@ def upload_lesson_image_file(
     import uuid
 
     stem = f"gallery_{uuid.uuid4().hex[:12]}"
-    dest = media_dir(lesson_id) / f"{stem}{ext}"
-    dest.write_bytes(content)
-    image_url = public_image_path(lesson_id, stem, ext.lstrip("."))
+    if s3_enabled():
+        try:
+            image_url = upload_gallery_bytes(
+                lesson_id,
+                f"{stem}{ext}",
+                content,
+                ext=ext,
+            )
+        except Exception as exc:
+            log.exception("S3 gallery upload failed lesson=%s", lesson_id)
+            raise ValueError(f"Could not upload image to S3: {exc}") from exc
+    else:
+        dest = media_dir(lesson_id) / f"{stem}{ext}"
+        dest.write_bytes(content)
+        image_url = public_image_path(lesson_id, stem, ext.lstrip("."))
     add_lesson_image(
         lesson_id,
         image_url=image_url,
@@ -416,5 +429,7 @@ def remove_lesson_image(lesson_id: str, image_id: str) -> dict[str, Any]:
     row = delete_lesson_image(lesson_id, image_id)
     if not row:
         raise KeyError("Image not found for this chapter.")
-    _unlink_local_media(row.get("image_url"))
+    image_url = row.get("image_url")
+    delete_gallery_url(image_url)
+    _unlink_local_media(image_url)
     return public_media(lesson_id, student=False)
