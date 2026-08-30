@@ -26,6 +26,7 @@ from app.ar_topic_service import (
     list_teacher_topic_ar_packs,
     get_public_topic_ar_pack,
 )
+from app.chapter_unlock import assert_lesson_unlocked_for_learning
 from app.cheat_sheet_service import get_or_generate_cheatsheet
 from app.lesson_media_store import init_lesson_media_db
 from app.lesson_media_service import (
@@ -1139,6 +1140,17 @@ def post_lesson(body: LessonRequest) -> LessonResponse:
     if not body.lesson_id:
         raise HTTPException(status_code=400, detail="lesson_id is required")
 
+    try:
+        assert_lesson_unlocked_for_learning(
+            body.lesson_id,
+            user_id=body.user_id,
+            completed_lesson_ids=prog.get("completed_lesson_ids") or [],
+            quiz_by_lesson=prog.get("quiz_by_lesson") or {},
+            grade=prog.get("grade"),
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
+
     title, grade, topic = _lesson_meta(body.lesson_id)
     if title is None and grade is None and topic is None:
         raise HTTPException(status_code=400, detail=f"Unknown lesson_id: {body.lesson_id!r}")
@@ -1149,28 +1161,36 @@ def post_lesson(body: LessonRequest) -> LessonResponse:
         event=event,
     )
     if row and used_profile:
-        try:
-            update_progress(body.user_id, action="set_current", lesson_id=body.lesson_id)
-        except Exception as exc_update:
-            log.warning("set_current failed user=%r: %s", body.user_id, exc_update)
-        msg = "Loaded from teacher library."
-        out_source = profile_source
-        if used_profile != profile:
-            msg = (
-                f"Loaded the {profile_display_label(used_profile)} version "
-                f"(no {profile_display_label(profile)} text published yet)."
+        lesson_body = (row.get("lesson_text") or "").strip()
+        if not lesson_body:
+            log.info(
+                "lesson empty library row user=%r lesson_id=%r profile=%r",
+                body.user_id,
+                body.lesson_id,
+                used_profile,
             )
-            out_source = "library_fallback"
-        return _response_from_library(
-            row,
-            profile=used_profile,
-            profile_source=out_source,
-            mastery_score_used=mastery_used,
-            message=msg,
-        )
+        else:
+            try:
+                update_progress(body.user_id, action="set_current", lesson_id=body.lesson_id)
+            except Exception as exc_update:
+                log.warning("set_current failed user=%r: %s", body.user_id, exc_update)
+            msg = "Loaded from teacher library."
+            out_source = profile_source
+            if used_profile != profile:
+                msg = (
+                    f"Loaded the {profile_display_label(used_profile)} version "
+                    f"(no {profile_display_label(profile)} text published yet)."
+                )
+                out_source = "library_fallback"
+            return _response_from_library(
+                row,
+                profile=used_profile,
+                profile_source=out_source,
+                mastery_score_used=mastery_used,
+                message=msg,
+            )
 
     if not STUDENT_ALLOW_GENERATE:
-        level = profile_display_label(profile)
         cur = load_curriculum()
         le = cur.by_lesson_id(body.lesson_id)
         return LessonResponse(
@@ -1184,8 +1204,7 @@ def post_lesson(body: LessonRequest) -> LessonResponse:
             profile_source=profile_source,
             mastery_score_used=mastery_used,
             message=(
-                f"No teacher-approved lesson yet for this chapter (tried {level} and fallbacks). "
-                "Ask your teacher to generate and save it first."
+                "Your teacher has not added this lesson yet. Please check with them."
             ),
         )
 

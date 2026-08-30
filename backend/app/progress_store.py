@@ -8,6 +8,7 @@ import time
 from pathlib import Path
 from typing import Any, Literal
 
+from app.chapter_unlock import assert_lesson_unlocked_for_learning
 from app.chroma_setup import BACKEND_ROOT
 from app.curriculum import Curriculum, load_curriculum
 from app.mastery_profile import profile_display_label
@@ -175,6 +176,15 @@ def update_progress(
         else:
             session = {**session, "grade": current_grade}
     elif action == "set_current":
+        if lid:
+            assert_lesson_unlocked_for_learning(
+                lid,
+                user_id=user_id,
+                completed_lesson_ids=completed,
+                quiz_by_lesson=quiz,
+                grade=current_grade,
+                cur=c,
+            )
         current = lid
         entry = c.by_lesson_id(lid)
         if entry and entry.grade is not None:
