@@ -11,12 +11,18 @@ def test_profile_display_label():
     assert profile_display_label("average") == "Intermediate"
 
 
-def test_prefer_stored_over_request():
+def test_request_profile_over_stored():
     prof, src, _ = resolve_lesson_profile(
-        explicit_profile="basic",
         request_profile="basic",
         stored_profile="advanced",
-        prefer_stored=True,
+    )
+    assert prof == "basic"
+    assert src == "request_profile"
+
+
+def test_stored_profile_when_no_request():
+    prof, src, _ = resolve_lesson_profile(
+        stored_profile="advanced",
     )
     assert prof == "advanced"
     assert src == "stored_profile"
@@ -25,7 +31,6 @@ def test_prefer_stored_over_request():
 def test_request_profile_when_no_stored():
     prof, src, _ = resolve_lesson_profile(
         request_profile="smart",
-        prefer_stored=True,
     )
     assert prof == "advanced"
     assert src == "request_profile"
@@ -33,7 +38,6 @@ def test_request_profile_when_no_stored():
 
 def test_game_failed_forces_basic():
     prof, src, _ = resolve_lesson_profile(
-        explicit_profile="advanced",
         request_profile="advanced",
         stored_profile="advanced",
         event="game_failed_return",

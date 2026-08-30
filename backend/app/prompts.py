@@ -127,12 +127,37 @@ TEACHING RULES:
 """.strip(),
 }
 
+GRADE_9_BASIC_PEDAGOGY_ADDENDUM = """
+GRADE 9 BASIC (O-LEVEL ENTRY YEAR):
+- This learner is in Grade 9 (preparing for O-Levels), so the tone is a step above Grades 6–8 basic:
+  still gentle and scaffolded, but not childish.
+- After each simple explanation, name the correct scientific term from the passages (do not skip real names).
+- Sentences may be up to ~18 words when needed for clarity; still one idea per sentence and one sentence per slide.
+- Cover the full chapter main ideas in order — Grade 9 basic is thorough, not a tiny overview.
+- Use at most ONE short analogy; prefer precise textbook wording once a term is introduced.
+""".strip()
+
+GRADE_9_INTERMEDIATE_PEDAGOGY_ADDENDUM = """
+GRADE 9 INTERMEDIATE (O-LEVEL ENTRY YEAR):
+- Grade 9 prepares for O-Levels: use a more formal, exam-ready classroom tone than Grades 6–8 intermediate.
+- Teach mechanisms and cause → effect (how and why), not only definitions — still only from the passages.
+- Keep sentence clarity with blank lines between sentences; depth is higher than lower grades but do NOT add "Go deeper".
+- Connect ideas within the chapter (compare, contrast, "this leads to…") using passage facts only.
+- Include all named examples and technical terms from the sources; do not oversimplify away O-Level vocabulary.
+""".strip()
+
 GRADE_9_ADVANCED_PEDAGOGY_ADDENDUM = """
 GRADE 9 ADVANCED ENRICHMENT:
 - Because this is Grade 9 (preparing for senior level/O-Levels), elevate the academic tone to be formal, precise, and rigorous.
 - Emphasize underlying scientific principles and mechanisms (how and why things happen, not just what they are).
 - Under the "Go deeper" section, focus heavily on multi-step cause-and-effect chains and the broader scientific significance of these concepts.
 """.strip()
+
+_GRADE_9_PEDAGOGY_ADDENDUM: dict[Profile, str] = {
+    "basic": GRADE_9_BASIC_PEDAGOGY_ADDENDUM,
+    "intermediate": GRADE_9_INTERMEDIATE_PEDAGOGY_ADDENDUM,
+    "advanced": GRADE_9_ADVANCED_PEDAGOGY_ADDENDUM,
+}
 
 EVENT_ADDENDUM: dict[str, str] = {
     "lesson_start": (
@@ -217,11 +242,11 @@ def build_enrichment_retrieval_query(*, topic_id: str, lesson_title: str | None)
 def build_system_message(*, profile: str, event: str | None, grade: int | None = None) -> str:
     prof = normalize_profile(profile)
     evt = normalize_event(event)
-    
+
     pedagogy = PROFILE_PEDAGOGY[prof]
-    if prof == "advanced" and grade == 9:
-        pedagogy = pedagogy + "\n\n" + GRADE_9_ADVANCED_PEDAGOGY_ADDENDUM
-        
+    if grade == 9:
+        pedagogy = pedagogy + "\n\n" + _GRADE_9_PEDAGOGY_ADDENDUM[prof]
+
     parts = [
         SYSTEM_ROLE,
         GROUNDING_RULES,
@@ -318,6 +343,12 @@ def build_user_message(
     )
     title_line = f'CHAPTER: "{lesson_title}"\n' if lesson_title else ""
     grade_line = f"GRADE: {grade}\n" if grade is not None else ""
+    grade_task = ""
+    if grade == 9:
+        grade_task = (
+            f"NOTE: Grade 9 is O-Level entry — tone and depth should be slightly above Grades 6–8 "
+            f"while staying strictly at LEARNER_LEVEL={prof}.\n"
+        )
     output_fmt = build_output_format(prof, evt)
 
     return (
@@ -325,6 +356,7 @@ def build_user_message(
         f"{grade_line}"
         f"{title_line}"
         f"LEARNER_LEVEL: {prof}\n\n"
+        f"{grade_task}"
         f"{output_fmt}\n\n"
         f"TEXTBOOK EXCERPTS (sole source of truth — do not cite excerpt numbers in your answer):\n{joined}\n\n"
         f"TASK:\n"

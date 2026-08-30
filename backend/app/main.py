@@ -1119,25 +1119,13 @@ def post_lesson(body: LessonRequest) -> LessonResponse:
     event = normalize_event(body.event)
     prog = get_progress(body.user_id)
     stored = prog.get("derived_profile") if body.use_stored_mastery else None
+    request_profile = (body.profile or "").strip() or None
 
-    # Content is chosen from the client's selected level first.
-    # Analytics-stored profile only fills in when the client sends no profile.
-    if body.profile and str(body.profile).strip():
-        profile, profile_source, mastery_used = resolve_lesson_profile(
-            explicit_profile=body.profile,
-            request_profile=body.profile,
-            stored_profile=None,
-            event=event,
-            prefer_stored=False,
-        )
-    else:
-        profile, profile_source, mastery_used = resolve_lesson_profile(
-            explicit_profile=None,
-            request_profile=None,
-            stored_profile=stored,
-            event=event,
-            prefer_stored=True,
-        )
+    profile, profile_source, mastery_used = resolve_lesson_profile(
+        request_profile=request_profile,
+        stored_profile=stored,
+        event=event,
+    )
 
     log.info(
         "lesson request user=%r lesson_id=%r profile=%r (source=%s) event=%r",

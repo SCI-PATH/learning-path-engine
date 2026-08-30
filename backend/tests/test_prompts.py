@@ -81,27 +81,45 @@ def test_profiles_are_distinct_in_system_prompts():
 
 
 def test_grade_9_advanced_enrichment_included():
-    # Verify Grade 9 advanced appends Grade 9 advanced pedagogy enrichment
     sys = build_system_message(profile="advanced", event="lesson_start", grade=9)
     assert "GRADE 9 ADVANCED ENRICHMENT" in sys
     assert "O-Levels" in sys
 
-    # Verify Grade 6 advanced does NOT include it
     sys_g6 = build_system_message(profile="advanced", event="lesson_start", grade=6)
     assert "GRADE 9 ADVANCED ENRICHMENT" not in sys_g6
 
-    # Verify user message includes the grade line
+
+def test_grade_9_intermediate_enrichment_included():
+    sys = build_system_message(profile="intermediate", event="lesson_start", grade=9)
+    assert "GRADE 9 INTERMEDIATE" in sys
+    assert "O-LEVEL ENTRY" in sys
+    assert "Go deeper" not in sys.split("GRADE 9 INTERMEDIATE")[1][:200]
+
+    sys_g7 = build_system_message(profile="intermediate", event="lesson_start", grade=7)
+    assert "GRADE 9 INTERMEDIATE" not in sys_g7
+
+
+def test_grade_9_basic_enrichment_included():
+    sys = build_system_message(profile="basic", event="lesson_start", grade=9)
+    assert "GRADE 9 BASIC" in sys
+    assert "O-LEVEL ENTRY" in sys
+
+    sys_g8 = build_system_message(profile="basic", event="lesson_start", grade=8)
+    assert "GRADE 9 BASIC" not in sys_g8
+
+
+def test_grade_9_user_message_includes_grade_note():
     user_msg_g9 = build_user_message(
         topic_id="G9_S1_XYZ",
         lesson_title="Title",
         passages=["Text"],
-        profile="advanced",
+        profile="intermediate",
         event="lesson_start",
         grade=9,
     )
     assert "GRADE: 9" in user_msg_g9
+    assert "O-Level entry" in user_msg_g9
 
-    # Verify user message does not include grade line when grade is None
     user_msg_none = build_user_message(
         topic_id="G9_S1_XYZ",
         lesson_title="Title",
@@ -111,3 +129,4 @@ def test_grade_9_advanced_enrichment_included():
         grade=None,
     )
     assert "GRADE:" not in user_msg_none
+    assert "O-Level entry" not in user_msg_none
