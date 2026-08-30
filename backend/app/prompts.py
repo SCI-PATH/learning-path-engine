@@ -127,6 +127,13 @@ TEACHING RULES:
 """.strip(),
 }
 
+GRADE_9_ADVANCED_PEDAGOGY_ADDENDUM = """
+GRADE 9 ADVANCED ENRICHMENT:
+- Because this is Grade 9 (preparing for senior level/O-Levels), elevate the academic tone to be formal, precise, and rigorous.
+- Emphasize underlying scientific principles and mechanisms (how and why things happen, not just what they are).
+- Under the "Go deeper" section, focus heavily on multi-step cause-and-effect chains and the broader scientific significance of these concepts.
+""".strip()
+
 EVENT_ADDENDUM: dict[str, str] = {
     "lesson_start": (
         "SITUATION: First teaching pass for this chapter. Introduce the topic clearly from the passages."
@@ -207,13 +214,18 @@ def build_enrichment_retrieval_query(*, topic_id: str, lesson_title: str | None)
     )
 
 
-def build_system_message(*, profile: str, event: str | None) -> str:
+def build_system_message(*, profile: str, event: str | None, grade: int | None = None) -> str:
     prof = normalize_profile(profile)
     evt = normalize_event(event)
+    
+    pedagogy = PROFILE_PEDAGOGY[prof]
+    if prof == "advanced" and grade == 9:
+        pedagogy = pedagogy + "\n\n" + GRADE_9_ADVANCED_PEDAGOGY_ADDENDUM
+        
     parts = [
         SYSTEM_ROLE,
         GROUNDING_RULES,
-        PROFILE_PEDAGOGY[prof],
+        pedagogy,
         EVENT_ADDENDUM.get(evt, EVENT_ADDENDUM["lesson_start"]),
     ]
     return "\n\n".join(parts)
@@ -297,6 +309,7 @@ def build_user_message(
     passages: list[str],
     profile: str,
     event: str | None,
+    grade: int | None = None,
 ) -> str:
     prof = normalize_profile(profile)
     evt = normalize_event(event)
@@ -304,10 +317,12 @@ def build_user_message(
         f"[SOURCE {i + 1}]\n{chunk}" for i, chunk in enumerate(passages)
     )
     title_line = f'CHAPTER: "{lesson_title}"\n' if lesson_title else ""
+    grade_line = f"GRADE: {grade}\n" if grade is not None else ""
     output_fmt = build_output_format(prof, evt)
 
     return (
         f"TOPIC_ID: {topic_id}\n"
+        f"{grade_line}"
         f"{title_line}"
         f"LEARNER_LEVEL: {prof}\n\n"
         f"{output_fmt}\n\n"

@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import logging
 import os
+import re
 import time
 
 from app.chroma_setup import COLLECTION_NAME, get_chroma_client
@@ -169,18 +170,20 @@ def generate_lesson_text(
     profile: str,
     event: str | None,
     lesson_title: str | None = None,
+    grade: int | None = None,
 ) -> str:
     """Call Groq or xAI via OpenAI-compatible chat completions."""
     client, model = _llm_client_and_model()
 
     prof = normalize_profile(profile)
-    system = build_system_message(profile=profile, event=event)
+    system = build_system_message(profile=profile, event=event, grade=grade)
     user = build_user_message(
         topic_id=topic_id,
         lesson_title=lesson_title,
         passages=context_chunks,
         profile=profile,
         event=event,
+        grade=grade,
     )
 
     messages = [
@@ -224,6 +227,24 @@ def _completion_extra_body(model: str) -> dict:
     return {}
 
 
+def _rate_limit_wait_seconds(exc: Exception, attempt: int) -> float:
+    """Backoff for Groq/OpenAI 429; parse 'try again in Xs' when present."""
+    msg = str(exc)
+    m = re.search(r"try again in ([\d.]+)s", msg, re.I)
+    if m:
+        return float(m.group(1)) + 1.0
+    return float(2**attempt)
+
+
+def _should_fail_fast_to_fallback(exc: Exception) -> bool:
+    """Skip retries on daily quota or long TPM waits so fallback model can run."""
+    msg = str(exc).lower()
+    if "tokens per day" in msg or "tpd" in msg:
+        return True
+    m = re.search(r"try again in ([\d.]+)s", str(exc), re.I)
+    return bool(m and float(m.group(1)) > 30)
+
+
 def _chat_completion_text(
     client: object,
     model: str,
@@ -245,9 +266,12 @@ def _chat_completion_text(
                 **({"extra_body": extra} if extra else {}),
             )
         except Exception as exc:
+            if _should_fail_fast_to_fallback(exc):
+                raise
             if attempt < 2:
                 log.warning("llm request failed attempt=%s model=%s: %s", attempt + 1, model, exc)
-                time.sleep(2**attempt)
+                wait_s = _rate_limit_wait_seconds(exc, attempt)
+                time.sleep(wait_s)
                 continue
             raise
         choice = (resp.choices[0].message.content or "").strip()
@@ -283,6 +307,8 @@ def build_lesson(
     """
     lesson_title: str | None = None
     resolved_lesson: str | None = None
+    grade: int | None = None
+
     if lesson_id and lesson_id.strip():
         entry = resolve_lesson(lesson_id)
         if not entry:
@@ -292,14 +318,20 @@ def build_lesson(
         effective_topic = entry.topic_id
         lesson_title = entry.title
         resolved_lesson = entry.lesson_id
+        grade = entry.grade
     else:
         mapped = resolve_lesson(topic_id)
         if mapped:
             effective_topic = mapped.topic_id
             lesson_title = mapped.title
             resolved_lesson = mapped.lesson_id
+            grade = mapped.grade
         else:
             effective_topic = resolve_chroma_topic_id(topic_id)
+            # Fallback regex for topic_id like "G9_S1..." or "g9_ch..."
+            m = re.search(r"[gG](\d+)", topic_id)
+            if m:
+                grade = int(m.group(1))
 
     prof = normalize_profile(profile)
     k = top_k if top_k is not None else retrieval_top_k(profile)
@@ -347,6 +379,7 @@ def build_lesson(
         profile=profile,
         event=event,
         lesson_title=lesson_title,
+        grade=grade,
     )
     log.info(
         "llm complete topic=%r profile=%r event=%r out_chars=%s %.3fs",

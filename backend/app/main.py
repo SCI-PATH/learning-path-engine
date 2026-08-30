@@ -6,10 +6,15 @@ from typing import Any
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, File, Form, HTTPException, Query, Request, Response, UploadFile
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.utils import get_openapi
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from app.http_security import RateLimitMiddleware, SecurityHeadersMiddleware, TeacherAuthMiddleware
 from app.ar_service import ensure_ar_package, get_or_generate_ar
 from app.ar_images import MEDIA_ROOT
 from app.ar_store import clear_generated_payload, delete_ar, get_ar, init_ar_db, list_ar, upsert_ar
@@ -95,25 +100,34 @@ OPENAPI_TAGS = [
     },
     {
         "name": "analytics",
-        "description": "Learner profile (basic | intermediate | advanced) and legacy mastery score.",
+        "description": "Learner profile (basic | intermediate | advanced) for other services.",
     },
     {
         "name": "teacher-library",
-        "description": "Generate, publish, and edit chapter content per knowledge level.",
-    },
-    {
-        "name": "teacher-media",
-        "description": "YouTube + summary infographic per chapter.",
+        "description": "Generate and publish chapter content per knowledge level.",
     },
     {
         "name": "ar",
-        "description": "Chapter / topic AR packs for students and teachers.",
-    },
-    {
-        "name": "admin-debug",
-        "description": "Dev/admin helpers (Chroma stats, topic-id migration).",
+        "description": "Chapter AR pack for students.",
     },
 ]
+
+# Swagger (/docs) shows only these major / integration paths — not every admin/debug/media route.
+OPENAPI_INCLUDE_PATHS = {
+    "/health",
+    "/curriculum",
+    "/curriculum/resolve/{topic_or_skill_id}",
+    "/progress",
+    "/lesson/current",
+    "/lesson",
+    "/lesson/{lesson_id}/media",
+    "/lesson/{lesson_id}/cheatsheet",
+    "/lesson/{lesson_id}/ar",
+    "/analytics/profile",
+    "/analytics/profile/{user_id}",
+    "/teacher/generate",
+    "/teacher/library",
+}
 
 app = FastAPI(
     title="Learning Path Engine",
@@ -121,6 +135,8 @@ app = FastAPI(
     description=(
         "## SCI-PATH Learning Path Engine\n\n"
         "Curriculum-ordered lessons, teacher-approved content, progress, media, and AR.\n\n"
+        "**Swagger lists major integration APIs only** (student path, progress, curriculum, "
+        "analytics profile, teacher generate/publish). Other routes still work at runtime.\n\n"
         "### Cross-service: student name & grade\n"
         "Fetch identity from User Management: "
         "`GET http://localhost:8001/students/{student_id}` → "
@@ -170,6 +186,18 @@ def _startup() -> None:
     init_ar_topic_db()
     init_lesson_media_db()
     MEDIA_ROOT.mkdir(parents=True, exist_ok=True)
+    auth_mode = (os.getenv("LPE_TEACHER_AUTH") or "off").strip().lower()
+    if auth_mode == "required" and not (os.getenv("JWT_SECRET") or "").strip():
+        log.warning(
+            "LPE_TEACHER_AUTH=required but JWT_SECRET unset — teacher routes stay open until JWT_SECRET is set"
+        )
+    elif auth_mode != "off" and (os.getenv("JWT_SECRET") or "").strip():
+        log.info("LPE teacher/admin auth mode=%s", auth_mode)
+
+
+app.add_middleware(TeacherAuthMiddleware)
+app.add_middleware(RateLimitMiddleware)
+app.add_middleware(SecurityHeadersMiddleware)
 
 
 app.add_middleware(
@@ -179,6 +207,72 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+    if exc.status_code >= 500:
+        log.error(
+            "http_error status=%s path=%s detail=%s",
+            exc.status_code,
+            request.url.path,
+            exc.detail,
+        )
+    elif exc.status_code >= 400:
+        log.warning(
+            "http_error status=%s path=%s detail=%s",
+            exc.status_code,
+            request.url.path,
+            exc.detail,
+        )
+    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    log.warning("validation_error path=%s errors=%s", request.url.path, exc.errors())
+    return JSONResponse(status_code=422, content={"detail": exc.errors()})
+
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception):
+    log.exception("unhandled_error path=%s", request.url.path)
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Something went wrong. Please try again."},
+    )
+
+
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+    schema = get_openapi(
+        title=app.title,
+        version=app.version,
+        description=app.description,
+        routes=app.routes,
+        tags=OPENAPI_TAGS,
+        contact=app.contact,
+    )
+    schema["paths"] = {
+        path: methods
+        for path, methods in (schema.get("paths") or {}).items()
+        if path in OPENAPI_INCLUDE_PATHS
+    }
+    used_tags = {
+        tag
+        for methods in schema["paths"].values()
+        for op in methods.values()
+        if isinstance(op, dict)
+        for tag in (op.get("tags") or [])
+        if isinstance(tag, str)
+    }
+    schema["tags"] = [t for t in OPENAPI_TAGS if t["name"] in used_tags]
+    app.openapi_schema = schema
+    return schema
+
+
+app.openapi = custom_openapi
 
 # Stored AR photos: backend/data/ar_media/{lesson_id}/{scene}.jpg
 MEDIA_ROOT.mkdir(parents=True, exist_ok=True)
@@ -775,7 +869,19 @@ def write_progress(body: ProgressUpdateRequest) -> ProgressResponse:
             grade=body.grade,
         )
     except ValueError as exc:
+        log.warning(
+            "progress update rejected user=%r action=%s: %s",
+            body.user_id,
+            body.action,
+            exc,
+        )
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+    log.info(
+        "progress update user=%r action=%s lesson=%r",
+        body.user_id,
+        body.action,
+        body.lesson_id,
+    )
     return _enrich_progress(st)
 
 
@@ -882,6 +988,12 @@ def post_analytics_profile(body: LearnerProfileRequest) -> LearnerProfileRespons
             grade=body.grade,
         )
     except Exception as exc:
+        log.warning(
+            "analytics profile rejected user=%r profile=%r: %s",
+            body.user_id,
+            body.profile,
+            exc,
+        )
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     profile = st.get("derived_profile") or "intermediate"
     log.info(
@@ -939,6 +1051,12 @@ def post_analytics_mastery(body: MasteryScoreRequest) -> MasteryScoreResponse:
             source=body.source,
         )
     except Exception as exc:
+        log.warning(
+            "analytics mastery rejected user=%r score=%r: %s",
+            body.user_id,
+            body.mastery_score,
+            exc,
+        )
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     profile = st["derived_profile"] or "intermediate"
     log.info(

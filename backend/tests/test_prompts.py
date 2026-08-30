@@ -57,7 +57,7 @@ def test_user_message_lists_passages():
         profile="intermediate",
         event="lesson_start",
     )
-    assert "PASSAGE 1" in user
+    assert "SOURCE 1" in user
     assert "North pole" in user
     assert "OUTPUT FORMAT" in user
     assert "LEARNER_LEVEL: intermediate" in user
@@ -78,3 +78,36 @@ def test_profiles_are_distinct_in_system_prompts():
     assert "exactly: Go deeper" in adv_fmt
     assert "exactly: Go deeper" not in mid_fmt
     assert "exactly: Go deeper" not in basic_fmt
+
+
+def test_grade_9_advanced_enrichment_included():
+    # Verify Grade 9 advanced appends Grade 9 advanced pedagogy enrichment
+    sys = build_system_message(profile="advanced", event="lesson_start", grade=9)
+    assert "GRADE 9 ADVANCED ENRICHMENT" in sys
+    assert "O-Levels" in sys
+
+    # Verify Grade 6 advanced does NOT include it
+    sys_g6 = build_system_message(profile="advanced", event="lesson_start", grade=6)
+    assert "GRADE 9 ADVANCED ENRICHMENT" not in sys_g6
+
+    # Verify user message includes the grade line
+    user_msg_g9 = build_user_message(
+        topic_id="G9_S1_XYZ",
+        lesson_title="Title",
+        passages=["Text"],
+        profile="advanced",
+        event="lesson_start",
+        grade=9,
+    )
+    assert "GRADE: 9" in user_msg_g9
+
+    # Verify user message does not include grade line when grade is None
+    user_msg_none = build_user_message(
+        topic_id="G9_S1_XYZ",
+        lesson_title="Title",
+        passages=["Text"],
+        profile="advanced",
+        event="lesson_start",
+        grade=None,
+    )
+    assert "GRADE:" not in user_msg_none
