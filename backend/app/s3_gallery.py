@@ -38,7 +38,7 @@ def _bucket() -> str:
 
 
 def _region() -> str:
-    return os.getenv("AWS_REGION", os.getenv("AWS_DEFAULT_REGION", "ap-south-1")).strip() or "ap-south-1"
+    return os.getenv("AWS_REGION", os.getenv("AWS_DEFAULT_REGION", "ap-southeast-2")).strip() or "ap-southeast-2"
 
 
 def _prefix() -> str:
@@ -61,8 +61,37 @@ def public_object_url(key: str) -> str:
     return f"https://{bucket}.s3.{region}.amazonaws.com/{key}"
 
 
+def proxy_path_for_key(key: str) -> str:
+    """Same-origin path proxied by LPE (bucket stays private)."""
+    return f"/lesson-media-proxy/{key.lstrip('/')}"
+
+
+def accessible_image_url(image_url: str | None) -> str | None:
+    """Rewrite private S3 URLs to the LPE proxy so browsers can load them.
+
+    Local /ar-media paths and non-S3 URLs are returned unchanged.
+    """
+    raw = (image_url or "").strip()
+    if not raw:
+        return None
+    if not s3_enabled():
+        return raw
+    key = _key_from_url(raw)
+    if not key:
+        return raw
+    return proxy_path_for_key(key)
+
+
+def get_object_bytes(key: str) -> tuple[bytes, str]:
+    """Fetch an object from the lesson-media bucket. Raises on missing keys."""
+    resp = _client().get_object(Bucket=_bucket(), Key=key)
+    body = resp["Body"].read()
+    content_type = (resp.get("ContentType") or "application/octet-stream").strip()
+    return body, content_type
+
+
 def upload_gallery_bytes(lesson_id: str, filename: str, content: bytes, *, ext: str) -> str:
-    """Put object and return the public HTTPS URL."""
+    """Put object and return the canonical HTTPS URL (served via proxy to browsers)."""
     key = gallery_object_key(lesson_id, filename)
     content_type = _CONTENT_TYPES.get(ext.lower(), "application/octet-stream")
     _client().put_object(

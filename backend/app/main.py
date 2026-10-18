@@ -40,6 +40,7 @@ from app.lesson_media_service import (
     set_lesson_youtube,
     upload_lesson_image_file,
 )
+from app.s3_gallery import get_object_bytes, s3_enabled
 from app.chroma_setup import COLLECTION_NAME, get_chroma_client
 from app.content_library import (
     delete_content,
@@ -1653,6 +1654,34 @@ def teacher_delete_ar(lesson_id: str) -> dict[str, Any]:
     if not delete_ar(lesson_id):
         raise HTTPException(status_code=404, detail="No AR asset for this lesson")
     return {"ok": True, "lesson_id": lesson_id}
+
+
+@app.get(
+    "/lesson-media-proxy/{object_key:path}",
+    tags=["student-lessons"],
+    summary="Stream a private S3 gallery object through LPE",
+    include_in_schema=False,
+)
+def proxy_lesson_media_object(object_key: str) -> Response:
+    """Browsers cannot read private S3 objects directly; this streams them with IAM creds."""
+    if not s3_enabled():
+        raise HTTPException(status_code=404, detail="S3 gallery storage is not configured")
+    key = (object_key or "").strip().lstrip("/")
+    if not key or ".." in key.split("/") or key.startswith("\\"):
+        raise HTTPException(status_code=400, detail="Invalid media key")
+    prefix = (os.getenv("S3_LESSON_PREFIX", "lesson-media").strip().strip("/") or "lesson-media")
+    if not key.startswith(f"{prefix}/"):
+        raise HTTPException(status_code=404, detail="Media not found")
+    try:
+        body, content_type = get_object_bytes(key)
+    except Exception as exc:
+        log.warning("lesson-media-proxy miss key=%s err=%s", key, exc)
+        raise HTTPException(status_code=404, detail="Media not found") from exc
+    return Response(
+        content=body,
+        media_type=content_type,
+        headers={"Cache-Control": "public, max-age=86400"},
+    )
 
 
 @app.get(

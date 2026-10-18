@@ -13,7 +13,12 @@ from typing import Any
 from urllib.parse import parse_qs, urlparse
 
 from app.ar_images import MEDIA_ROOT, STYLE_SUFFIX, generate_cartoon_image, media_dir, public_image_path
-from app.s3_gallery import delete_gallery_url, s3_enabled, upload_gallery_bytes
+from app.s3_gallery import (
+    accessible_image_url,
+    delete_gallery_url,
+    s3_enabled,
+    upload_gallery_bytes,
+)
 from app.content_library import find_content, list_content
 from app.curriculum import load_curriculum
 from app.lesson_media_store import (
@@ -178,6 +183,12 @@ def public_media(lesson_id: str, *, student: bool = False) -> dict[str, Any]:
     gallery = list_lesson_images(lesson_id)
     if student:
         gallery = [img for img in gallery if img.get("image_type") == "gallery"]
+    gallery = [
+        {**img, "image_url": accessible_image_url(img.get("image_url")) or img.get("image_url")}
+        for img in gallery
+    ]
+    if image_out:
+        image_out = accessible_image_url(image_out) or image_out
 
     links_in = row.get("links") if isinstance(row.get("links"), list) else []
     additional_materials = [
